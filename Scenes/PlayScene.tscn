@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://7j0vkn3efadf"]
+[gd_scene load_steps=30 format=3 uid="uid://7j0vkn3efadf"]
 
 [ext_resource type="PackedScene" uid="uid://byqmrpsamkv7n" path="res://StaticObjects/Floor/Floor.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://bddul4h12wu7p" path="res://Player/Player.tscn" id="2"]
@@ -25,6 +25,11 @@
 [ext_resource type="PackedScene" uid="uid://c8tomvpr6e0h" path="res://MovingObjects/RollingPlane/RollingPlane.tscn" id="23"]
 [ext_resource type="Script" path="res://Others/Pause.gd" id="24_4v7fj"]
 
+[sub_resource type="PrismMesh" id="PrismMesh_3y0qp"]
+size = Vector3(6, 11.007, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pcexi"]
+
 [sub_resource type="ProceduralSkyMaterial" id="1"]
 
 [sub_resource type="Sky" id="2"]
@@ -38,6 +43,7 @@ sky = SubResource( "2" )
 script = ExtResource( "15" )
 
 [node name="Player" parent="." instance=ExtResource( "2" )]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.831228, 0)
 
 [node name="Rooms" type="Node3D" parent="."]
 script = null
@@ -135,6 +141,13 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2.5, 0
 [node name="CrossPlate" parent="Rooms/SlopeTestRoom" instance=ExtResource( "12" )]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.8, 0)
 
+[node name="CSGMesh3D" type="CSGMesh3D" parent="Rooms/SlopeTestRoom"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 7.689, 2.20372, 9.07939)
+use_collision = true
+mesh = SubResource( "PrismMesh_3y0qp" )
+material = SubResource( "StandardMaterial3D_pcexi" )
+script = null
+
 [node name="LiftTestRoom" type="Node3D" parent="Rooms"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
 script = null
@@ -178,8 +191,6 @@ script = null
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environments"]
 transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
 shadow_enabled = true
-shadow_bias = 0.01
-shadow_blur = 2.0
 script = null
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="Environments"]
@@ -200,7 +211,7 @@ offset_top = 684.0
 offset_right = 1280.0
 offset_bottom = 710.0
 theme_override_colors/font_color = Color(0.027451, 0.407843, 1, 1)
-text = "Move: WASD / Camera: Arrow / Jump: Space / Run: Shift / Pause Mode: P"
+text = "Move: ZQSD /  Jump: Space / Run: Shift / Pause Mode: P"
 align = 1
 valign = 2
 structured_text_bidi_override_options = []
@@ -248,6 +259,157 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="GDScriptButton" type="CheckButton" parent="Texts"]
+offset_left = 1065.72
+offset_top = 18.7398
+offset_right = 1266.72
+offset_bottom = 58.7398
+focus_mode = 0
+pressed = true
+text = "Use GD method"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SnapButton" type="CheckButton" parent="Texts"]
+offset_left = 1099.72
+offset_top = 53.7398
+offset_right = 1264.72
+offset_bottom = 93.7398
+focus_mode = 0
+pressed = true
+text = "Floor Snap"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConstantSpeedButton" type="CheckButton" parent="Texts"]
+offset_left = 1072.37
+offset_top = 83.993
+offset_right = 1266.37
+offset_bottom = 123.993
+focus_mode = 0
+pressed = true
+text = "Constan Speed"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OnFloorButton" type="CheckButton" parent="Texts"]
+offset_left = 1072.37
+offset_top = 119.993
+offset_right = 1266.37
+offset_bottom = 159.993
+focus_mode = 0
+pressed = true
+text = "On floor only"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AirFrictionButton" type="CheckButton" parent="Texts"]
+offset_left = 1072.37
+offset_top = 156.993
+offset_right = 1266.37
+offset_bottom = 196.993
+focus_mode = 0
+pressed = true
+text = "Air friction"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AccelerationButton" type="CheckButton" parent="Texts"]
+offset_left = 1068.46
+offset_top = 194.106
+offset_right = 1262.46
+offset_bottom = 234.106
+focus_mode = 0
+pressed = true
+text = "Acceleration"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MaxFloorAngleSlider" type="HSlider" parent="Texts"]
+offset_left = 1204.0
+offset_top = 239.0
+offset_right = 1252.0
+offset_bottom = 255.0
+focus_mode = 0
+step = 5.0
+value = 45.0
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MaxFloorAngleLabel" type="Label" parent="Texts"]
+anchor_left = 0.857645
+anchor_top = 0.329572
+anchor_right = 0.888895
+anchor_bottom = 0.361516
+offset_left = -58.6982
+offset_top = -3.7467
+offset_right = 56.3018
+offset_bottom = -0.746704
+text = "Floor max angle: 45°"
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="WallMinAngleSlideSlider" type="HSlider" parent="Texts"]
+offset_left = 1205.25
+offset_top = 266.476
+offset_right = 1253.25
+offset_bottom = 282.476
+focus_mode = 0
+step = 5.0
+value = 15.0
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WallMinAngleSlideLabel" type="Label" parent="Texts"]
+anchor_left = 0.857645
+anchor_top = 0.329572
+anchor_right = 0.888895
+anchor_bottom = 0.361516
+offset_left = -49.9561
+offset_top = 23.7291
+offset_right = 65.0439
+offset_bottom = 26.7291
+text = "Min slide angle: 15°"
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
 [node name="Pause" type="Node" parent="."]
 process_mode = 3
 script = ExtResource( "24_4v7fj" )
+
+[connection signal="toggled" from="Texts/GDScriptButton" to="." method="_on_GDScriptButton_toggled"]
+[connection signal="toggled" from="Texts/SnapButton" to="." method="_on_SnapButton_toggled"]
+[connection signal="toggled" from="Texts/ConstantSpeedButton" to="." method="_on_ConstantSpeedButton_toggled"]
+[connection signal="toggled" from="Texts/OnFloorButton" to="." method="_on_OnFloorButton_toggled"]
+[connection signal="toggled" from="Texts/AirFrictionButton" to="." method="_on_AirFrictionButton_toggled"]
+[connection signal="toggled" from="Texts/AccelerationButton" to="." method="_on_AccelerationButton_toggled"]
+[connection signal="value_changed" from="Texts/MaxFloorAngleSlider" to="." method="_on_MaxFloorAngleSlider_value_changed"]
+[connection signal="value_changed" from="Texts/WallMinAngleSlideSlider" to="." method="_on_WallMinAngleSlideSlider_value_changed"]

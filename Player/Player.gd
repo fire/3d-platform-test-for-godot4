@@ -1,304 +1,410 @@
 extends CharacterBody3D
+@onready var camera_pivot = $CameraPivot
+@onready var camera = $CameraPivot/SpringArm3D/Camera3D
 
-# Adjusting init timing
-var _once = true
-
-
-# PlayerData
-const VIEW_POINT: Vector3 = Vector3(0, 1, 0);
-
-
-# Adjust Input
-# Note: The input value of the pad may not reach the upper limit
-const INPUT_AMP: float = 1.5
-
-
-# Define for Camera
-const CAMERA_MOUSE_ROTATION_SPEED: float = 0.001
-const CAMERA_CONTROLLER_ROTATION_SPEED: float = 3.0
-const CAMERA_X_ROT_MIN: float = -89.0
-const CAMERA_X_ROT_MAX: float = 89.0
-var _camera: InterpolatedCamera3D
-var _camera_point: Node3D
-var _camera_gaze: SpringArm3D
-var _camera_base: Node3D
-var _camera_base2: Node3D
-var _camera_light: OmniLight3D
-
-
-# Define for Movement
-const FLOOR_ANGLE_ON_FLOOR = deg2rad(45)
-const FLOOR_ANGLE_WHEN_JUMP = deg2rad(5)
-const GRAVITY: float = 30.0 # Gravitational Acceleration
-const DIRECTION_INTERPOLATE_SPEED: float = 1.0
-const MOTION_INTERPOLATE_SPEED: float = 20.0 # Movement Speed
-const ROTATION_INTERPOLATE_SPEED: float = 20.0 # Rotation Speed
-const JUMP_SPEED: float = 12.0 # Jump Initial Velocity
-const FLOOR_WAIT = 3.0
-enum PLAYER_POSITION_STATE {
-	FLOOR,
-	AIR
-}
-@onready var _animation_tree: AnimationTree = $AnimationTree
-
-
-# States
-var _state_orientation: Transform3D = Transform3D.IDENTITY
-var _state_root_motion: Transform3D = Transform3D.IDENTITY
-var _state_motion: Vector2 = Vector2.ZERO
-var _state_gravity: float = 0.0
-var _state_jump_velocity: Vector3 = Vector3.ZERO
-var _state_jump_additional_velocity: Vector3 = Vector3.ZERO
-var _state_jump_speed: float = 0.0
-
-var _state_camera_x_rot: float = 0.0
-
-var _state_is_running: bool = false
-var _state_was_running_before_jumping: bool = false
-var _state_is_jumping: bool = false
-
+var mouse_sensitivity: float = 0.0005
 # Debug
-var last_collision: KinematicCollision3D
+var last_collision
 
-# Funcs for Camera
-func _ready_camera():
-	_camera_base = Node3D.new()
-	_camera_base.set_name("CameraBase")
-	_camera_base2 = Node3D.new()
-	_camera_base2.set_name("CameraBase2")
-	_camera_gaze = SpringArm3D.new()
-	_camera_gaze.set_name("CameraGaze")
-	_camera_point = Node3D.new()
-	_camera_point.set_name("CameraPoint")
-	_camera = InterpolatedCamera3D.new()
-	_camera.set_name("Camera")
-	_camera_light = OmniLight3D.new()
-	_camera_light.set_name("CameraLight")
+func _ready():
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-	self.get_parent().add_child(_camera_base)
-	_camera_base.add_child(_camera_base2)
-	_camera_base2.add_child(_camera_gaze)
-	_camera_gaze.add_child(_camera_point)
-	self.get_parent().add_child(_camera)
-	_camera.add_child(_camera_light)
-	_camera.target = _camera_point.get_path()
-	
-	var shape = SphereShape3D.new()
-	shape.set_radius(0.1)
-	_camera_gaze.set_shape(shape)
-	_camera_gaze.add_excluded_object(self.get_rid())
-	_camera_light.omni_range = 10
-	_camera.fov = 60
-	_camera.near = 0.01
-	_camera.current = true
-	
-	self.init_camera()
-
-
-func init_camera() -> void:    
-	_camera_base.rotation.y = self.rotation.y
-	_camera_base2.transform.origin = Vector3(0, VIEW_POINT.y, 0)
-	_camera_gaze.set_length(4)
-	_camera_gaze.rotation.y = PI
-	_camera_point.rotation.y = 0
-	_camera.translate_speed = 1
-	_state_camera_x_rot = PI * 0.125
-	return
-
-
-func _input_camera(delta: float) -> void:
-	var camera_move: Vector2 = Vector2(
-		Input.get_action_strength("view_right") - Input.get_action_strength("view_left"),
-		Input.get_action_strength("view_up") - Input.get_action_strength("view_down")
-	)
-	camera_move *= INPUT_AMP
-	camera_move = camera_move.normalized() * clamp(camera_move.length(), 0, 1)
-	var camera_speed_this_frame = delta * CAMERA_CONTROLLER_ROTATION_SPEED
-	self._rotate_camera(camera_move * camera_speed_this_frame)
-	return
-
-func _rotate_camera(move) -> void:
-	_camera_base.rotate_y(-move.x)
-	_camera_base.orthonormalize()
-	_state_camera_x_rot += move.y
-	_state_camera_x_rot = clamp(_state_camera_x_rot, deg2rad(CAMERA_X_ROT_MIN), deg2rad(CAMERA_X_ROT_MAX))
-	_camera_base2.rotation.x = _state_camera_x_rot
-	return
-
-
-func _follow_camera() -> void:
-	_camera_base.global_transform.origin = self.global_transform.origin
-	return
-
-
-# Funcs for Movement
-func _input_motion(delta: float, motion: Vector2) -> Vector2:
-	var motion_target: Vector2 = Vector2(
-		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
-		Input.get_action_strength("move_back") - Input.get_action_strength("move_front")
-	)
-	motion_target *= INPUT_AMP
-	motion_target = motion_target.normalized() * clamp(motion_target.length(), 0, 1)
-	return motion.lerp(motion_target, MOTION_INTERPOLATE_SPEED * delta)
-
-
-func _apply_orientation(delta: float, orientation: Transform3D) -> void:
-	var h_velocity = orientation.origin / delta
-	self.linear_velocity.x = h_velocity.x
-	self.linear_velocity.z = h_velocity.z
-
-	# Apply GRAVITY
-	if self.is_on_floor():
-		_state_gravity = 0
-		var length = Vector3(self.linear_velocity.x, 0, self.linear_velocity.z).length()
-		self.linear_velocity = self.linear_velocity.normalized() * length
-	else:
-		_state_gravity = -GRAVITY * delta
-		self.linear_velocity.y = self.linear_velocity.y + _state_gravity
-
-	# Movement when jumping
-	var final_jump_velocity = _state_jump_velocity
-	if !self.is_on_floor():
-		final_jump_velocity.x = _state_jump_velocity.x + _state_jump_additional_velocity.x
-		final_jump_velocity.z = _state_jump_velocity.z + _state_jump_additional_velocity.z
-
-	# Calc snap value
-	if self.is_on_floor() && !_state_is_jumping:    
-		self.snap = -self.get_floor_normal() - self.get_platform_velocity() * delta
-	else:
-		self.snap = Vector3.ZERO
-
-	# Apply velocity
-	var tmp_velocity = self.linear_velocity;
-	self.linear_velocity = self.linear_velocity + final_jump_velocity
-	self.move_and_slide()
-	last_collision = get_last_slide_collision()
-
-	# Prevent snagging edge of moving platform when player jump on it
-	if self.is_on_floor() || (!self.is_on_floor() && abs(_state_gravity) >= self.linear_velocity.y):
-		self.floor_max_angle = FLOOR_ANGLE_ON_FLOOR
-	
-	# Don't go up slopes in the not floor
-	if !self.is_on_floor() && self.get_slide_collision_count() > 0 && _state_jump_velocity.y <= 0:
-		self.linear_velocity.y = tmp_velocity.y
-
-	# Reset jump velocity
-	_state_jump_velocity.y = 0
-
-	return
-
-
-func _tps_movement(delta: float) -> void:
-	self._input_camera(delta)
-	var camera_basis = _camera_base.global_transform.basis
-	var camera_z = camera_basis.z
-	var camera_x = camera_basis.x
-	camera_z.y = 0
-	camera_z = camera_z.normalized()
-	camera_x.y = 0
-	camera_x = camera_x.normalized()
-	_state_motion = self._input_motion(delta, _state_motion)
-
-	var target: Vector3 = camera_x * _state_motion.x + camera_z * _state_motion.y
-	if target.length() > 0.001:
-		var q_from: Quaternion = _state_orientation.basis.get_rotation_quaternion()
-		var q_to: Quaternion = Transform3D().looking_at(target, Vector3.UP).basis.get_rotation_quaternion()
-		# Interpolate current rotation with desired one.
-		_state_orientation.basis = Basis(q_from.slerp(q_to, delta * ROTATION_INTERPOLATE_SPEED))
-	
-	# Land behavior
-	if self.is_on_floor():
-		if _state_motion.length() < 0.1:
-			_animation_tree["parameters/StateLand/current"] = 0
+func _input(event):
+	if Input.is_action_just_pressed("ui_cancel"):
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
-			if !_state_is_running:
-				_animation_tree["parameters/StateLand/current"] = 1
-			else:
-				_animation_tree["parameters/StateLand/current"] = 2
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-		_state_root_motion = _animation_tree.get_root_motion_transform()
-		_state_root_motion.origin.y = 0
-		_state_orientation *= _state_root_motion
+	if event is InputEventMouseMotion:
+		rotation.y = rotation.y - (event.relative.x * mouse_sensitivity)
+		camera_pivot.rotation.x = camera_pivot.rotation.x + (event.relative.y * mouse_sensitivity )
+		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, deg2rad(-50), deg2rad(5))
+	
+	if Input.is_action_just_pressed("center"):
+		rotation.y = snapped(rotation.y, deg2rad(90))
 
-	# Air behavior
-	if !self.is_on_floor():
-		# Air movement
-		if !_state_was_running_before_jumping:
-			_state_jump_additional_velocity = -target * 1.5 # walk root motion speed
-		else:
-			_state_jump_additional_velocity = -target * max(_state_jump_speed, 1.5)
+func _process(delta):
+	floor_block_on_wall = Global.FLOOR_BLOCK_ON_WALL
+	floor_constant_speed = Global.FLOOR_CONSTANT_SPEED
+	floor_max_angle = Global.FLOOR_MAX_ANGLE
+	floor_stop_on_slope = Global.FLOOR_STOP_ON_SLOPE
+	slide_on_ceiling = Global.SLIDE_ON_CEILING
+	wall_min_slide_angle = Global.WALL_MIN_SLIDE_ANGLE
+	up_direction = Global.UP_DIRECTION
 
-		# Play fall animation
-		_animation_tree["parameters/StateGeneral/current"] = 1
-		_animation_tree["parameters/StateJump/current"] = 1
-	if _state_is_jumping && self.linear_velocity.y >= 0:
-		# Play jump animation
-		_animation_tree["parameters/StateGeneral/current"] = 1
-		_animation_tree["parameters/StateJump/current"] = 0
-
-	# Apply movement
-	self._apply_orientation(delta, _state_orientation)
-	_state_orientation.origin = Vector3.ZERO # Clear accumulated root motion displacement (was applied to speed).
-	_state_orientation = _state_orientation.orthonormalized() # Orthonormalize orientation.
-	self.global_transform.basis = _state_orientation.basis
-
-	# Reset jump velocity
-	if self.is_on_floor():
-		_animation_tree["parameters/StateGeneral/current"] = 0
-		_state_is_jumping = false
-		_state_jump_velocity = Vector3.ZERO
-		_state_jump_additional_velocity = Vector3.ZERO
-
-	return
-
-
-# Called when the node enters the scene tree for the first time.
-# func _ready():
-#	pass
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
-	# After ready
-	if _once:
-		_once = false
-		self._ready_camera()
+	var direction = Vector3()
+	if Input.is_action_pressed("move_forward"):
+		direction -= transform.basis.z
+	if Input.is_action_pressed("move_backward"):
+		direction += transform.basis.z
+	if Input.is_action_pressed("move_left"):
+		direction -= transform.basis.x
+	if Input.is_action_pressed("move_right"):
+		direction += transform.basis.x
 
-	# Input run
-	if Input.is_action_pressed("action_run"):
-		_state_is_running = true
+	direction = direction.normalized()
+	
+	var accel = Global.GROUND_ACCELERATION if util_on_floor() else Global.AIR_ACCELERATION
+	var speed = Global.RUN_SPEED if Input.is_action_pressed("run") else Global.WALK_SPEED
+	if (util_on_floor() and not Global.APPLY_ACCELERATION) or (not util_on_floor() and not Global.APPLY_ACCELERATION):
+		if(util_on_floor() or Global.APPLY_AIR_FRICTION):
+			linear_velocity.x = direction.x * speed
+			linear_velocity.z = direction.z * speed
 	else:
-		_state_is_running = false
-		_state_was_running_before_jumping = false
+		if(util_on_floor() or Global.APPLY_AIR_FRICTION):
+			linear_velocity.x = lerp(linear_velocity.x, direction.x * speed, accel * delta)
+			linear_velocity.z = lerp(linear_velocity.z, direction.z * speed, accel * delta)
+	
+	if Global.APPLY_SNAP:
+		floor_snap_length = Global.FLOOR_SNAP_LENGTH
+	else:
+		floor_snap_length = 0
+	#if util_on_floor():
+	#	linear_velocity.y = linear_velocity.y - 0.01
+	#else:
+	linear_velocity.y = linear_velocity.y - Global.GRAVITY
+	
+	if Input.is_action_just_pressed("jump"):
+		if Global.INFINITE_JUMP or util_on_floor():
+			linear_velocity.y = Global.JUMP_FORCE
+			floor_snap_length = 0
+	
+	if Global.USE_NATIVE_METHOD:
+		move_and_slide()
+		last_collision = get_last_slide_collision()
+	else:
+		custom_move_and_slide()	
 
-	# Input jump
-	if Input.is_action_just_pressed("action_jump"):
-		if self.is_on_floor():
-			self.floor_max_angle = FLOOR_ANGLE_WHEN_JUMP
-			_state_jump_velocity = Vector3(0, JUMP_SPEED, 0)
-			var floor_velocity: Vector3 = self.get_platform_velocity()
-			# Add velocity by moving playform
-			_state_jump_velocity += Vector3(floor_velocity.x, -floor_velocity.y, floor_velocity.z)
-			# Prevent landing on moving platform just after the jump
-			var floor_bounce: Vector3 = Vector3(-floor_velocity.x, 0, -floor_velocity.z).bounce(self.get_floor_normal())
-			var floor_bounce_y: float = max(0, floor_bounce.y) + floor_velocity.y
-			if (floor_bounce_y > 0):
-				self.global_transform.origin = self.global_transform.origin + Vector3(0, floor_bounce_y * delta, 0)
-			# Reset
-			self.linear_velocity.y = 0
-			# Set state is jump
-			_state_is_jumping = true
-			# Does jump has running-up
-			if _state_is_running && !is_equal_approx(_state_motion.length(), 0):
-				_state_was_running_before_jumping = true
-				# Prevent increasing velocity when jumping on a slope
-				var current_velocity_normal = self.linear_velocity.normalized()
-				var slide_velocity: Vector3 = Vector3(current_velocity_normal.x, 0, current_velocity_normal.z)
-				slide_velocity = slide_velocity.normalized() * 4.0 # run root motion speed
-				_state_jump_speed = slide_velocity.length()
+class CustomKinematicCollision3D:
+	var position : Vector3
+	var normal : Vector3
+	var collider : Object
+	var collider_velocity : Vector3
+	var travel : Vector3
+	var remainder : Vector3
+	var collision_rid: RID
+	
+	func get_angle(p_up_direction: Vector3) -> float:
+		return acos(normal.dot(p_up_direction))
+		
+	func get_collider_rid():
+		return collision_rid
+
+func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_cancel_sliding: bool = true, exlude = []):
+	var gt := get_global_transform()
+
+	var margin = get_safe_margin()
+
+	var result := PhysicsTestMotionResult3D.new()
+	var colliding := PhysicsServer3D.body_test_motion(get_rid(), gt, p_motion, margin, result, false, exlude)
+
+	var result_motion := result.travel
+	var result_remainder := result.remainder
+
+	if p_cancel_sliding:
+
+		var motion_length := p_motion.length()
+		var precision := 0.001
+
+		if colliding:
+			# Can't just use margin as a threshold because collision depth is calculated on unsafe motion,
+			# so even in normal resting cases the depth can be a bit more than the margin.
+			precision = precision + motion_length * (result.collision_unsafe_fraction - result.collision_safe_fraction)
+
+			if result.collision_depth > margin + precision:
+				p_cancel_sliding = false
+
+		if p_cancel_sliding:
+			# When motion is null, recovery is the resulting motion.
+			var motion_normal = Vector2.ZERO
+			if motion_length > 0.00001:
+				motion_normal = p_motion / motion_length
+
+			# Check depth of recovery.
+			var projected_length := result.travel.dot(motion_normal)
+			var recovery := result.travel - motion_normal * projected_length
+			var recovery_length := recovery.length()
+			# Fixes cases where canceling slide causes the motion to go too deep into the ground,
+			# Becauses we're only taking rest information into account and not general recovery.
+			if recovery_length < margin + precision:
+				# Apply adjustment to motion.
+				result_motion = motion_normal * projected_length
+				result_remainder = p_motion - result_motion
+
+	if (not p_test_only):
+		position = position + result_motion
+
+	if colliding:
+		var collision := CustomKinematicCollision3D.new()
+		collision.position = result.collision_point
+		collision.normal = result.collision_normal
+		collision.collider = result.collider
+		collision.collider_velocity = result.collider_velocity
+		collision.travel = result_motion
+		collision.remainder = result_remainder
+		collision.collision_rid = result.collider_rid
+
+		return collision
+	else:
+		return null
+		
+# Debug
+var debug_top_down_angle:= 0.0
+var debug_last_normal = Vector2.ZERO
+var debug_last_motion = Vector2.ZERO
+var debug_auto_move := false
+var use_build_in := false
+
+var on_floor := false
+var platform_rid :=  RID()
+var platform_layer:int
+var on_ceiling := false
+var on_wall = false
+var floor_normal := Vector3.ZERO
+var platform_velocity := Vector3.ZERO
+var FLOOR_ANGLE_THRESHOLD := 0.01
+var was_on_floor = false
+
+func custom_move_and_slide():
+	var current_platform_velocity = platform_velocity
+	if (on_floor or on_wall) and platform_rid.get_id():
+		var excluded = (moving_platform_ignore_layers & platform_layer) != 0
+		if not excluded:
+			var bs := PhysicsServer3D.body_get_direct_state(platform_rid)
+			if bs:
+				current_platform_velocity = bs.linear_velocity
+		else:
+			current_platform_velocity = Vector3.ZERO
+
+	was_on_floor = on_floor
+	on_floor = false
+	on_ceiling = false
+	on_wall = false
+
+	if not current_platform_velocity.is_equal_approx(Vector3.ZERO): # apply platform movement first
+		custom_move_and_collide(current_platform_velocity * get_physics_process_delta_time(), false, false, [platform_rid])
+#	emit_signal("follow_platform", str(current_platform_velocity * get_physics_process_delta_time()))
+	#else:
+	#	emit_signal("follow_platform", "/")
+
+	var motion = linear_velocity * get_physics_process_delta_time()
+	
+	var prev_floor_normal = floor_normal
+	var prev_platform_rid: = platform_rid
+	var prev_platform_layer = platform_layer
+	
+	platform_rid = RID()
+	floor_normal = Vector3.ZERO
+	platform_velocity = Vector3.ZERO
+	
+	if motion_mode == 1:
+		_move_and_slide_top_down_game(motion)
+	else:
+		_move_and_slide_side_game(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer)
+	
+	if not on_floor and not on_wall:
+		linear_velocity = linear_velocity + current_platform_velocity # Add last floor velocity when just left a moving platform
+
+func _move_and_slide_top_down_game(motion):
+	var first_slide = true
+	for _i in range(max_slides):
+		var collision = custom_move_and_collide(motion, false, false)
+		if collision:
+			_set_collision_direction(collision)
+			debug_top_down_angle = collision.get_angle(-linear_velocity.normalized())
+			if wall_min_slide_angle != 0 && collision.get_angle(-linear_velocity.normalized()) < wall_min_slide_angle + FLOOR_ANGLE_THRESHOLD:
+				motion = Vector3.ZERO
+			elif first_slide:
+				var slide: Vector3 = collision.remainder.slide(collision.normal).normalized()
+				motion = slide * (motion.length() - collision.travel.length())
 			else:
-				_state_was_running_before_jumping = false
-				_state_jump_speed = 0.0
-	self._tps_movement(delta)
-	self._follow_camera()
-	return
+				motion = collision.remainder.slide(collision.normal)
+			
+			if motion.dot(linear_velocity) <= 0.0:
+					motion = Vector3.ZERO
+
+		else:
+			debug_top_down_angle = 0
+		first_slide = false
+		if  not collision or motion.is_equal_approx(Vector3()):
+			break
+	
+func _move_and_slide_side_game(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer):
+	var motion_slided_up = motion.slide(up_direction)
+	
+	var vel_dir_facing_up := linear_velocity.dot(up_direction) > 0
+	# No sliding on first attempt to keep floor motion stable when possible.
+	var sliding_enabled := not floor_stop_on_slope or up_direction == Vector3.ZERO
+	var can_apply_constant_speed := sliding_enabled
+	var first_slide := true
+	var last_travel := Vector3.ZERO
+
+	for _i in range(max_slides):
+		var previous_pos = position
+
+		var collision = custom_move_and_collide(motion, false, not sliding_enabled)
+		if collision:
+			_set_collision_direction(collision)
+#		
+			if on_floor and floor_stop_on_slope and (linear_velocity.normalized() + up_direction).length() < 0.01:
+				if collision.travel.length() > get_safe_margin():
+					position = position - collision.travel.slide(up_direction)
+				else:
+					position = position - collision.travel
+				linear_velocity = Vector3.ZERO
+				motion = Vector3.ZERO
+				break
+			if collision.remainder.is_equal_approx(Vector3.ZERO):
+				motion = Vector3.ZERO
+				break
+			# move on floor only checks
+			if floor_block_on_wall and on_wall and motion_slided_up.dot(collision.normal) <= 0:
+				# constraints to move only
+				if was_on_floor and not on_floor and not vel_dir_facing_up:
+				
+					if collision.travel.length() <= get_safe_margin(): # If the movement is large the body can be prevented from reaching the walls.
+						position = position - collision.travel
+					on_floor = true
+					platform_rid = prev_platform_rid
+					platform_layer = prev_platform_layer
+					platform_velocity = current_platform_velocity
+					floor_normal = prev_floor_normal
+					
+					var motion_angle = collision.get_angle(-linear_velocity.slide(up_direction).normalized())
+					if (motion_angle > wall_min_slide_angle):
+						var slide : Vector3 = up_direction.cross(collision.normal)
+						motion = slide * motion.dot(slide.normalized())
+					else:
+						linear_velocity = Vector3.ZERO
+						motion = Vector2.ZERO
+						break
+					
+					#break
+				# prevent to move against the wall in the air
+				elif not on_floor:
+					var forward = collision.normal.slide(up_direction).normalized()
+					motion = collision.remainder.slide(collision.normal)
+					if linear_velocity.dot(forward) < 0:
+						linear_velocity = linear_velocity.slide(forward.abs())
+
+				# keep motion
+				else:
+					motion = collision.remainder
+			# constant Speed when the slope is upward
+			elif floor_constant_speed and util_on_floor_only() and can_apply_constant_speed and was_on_floor and motion.dot(collision.normal) < 0:
+				can_apply_constant_speed = false
+				var slide: Vector3 = collision.remainder.slide(collision.normal).normalized()
+				if not slide.is_equal_approx(Vector3.ZERO):
+					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - last_travel.slide(up_direction).length())
+			# prevent to move against wall
+			elif (sliding_enabled or not on_floor) and (not on_ceiling or slide_on_ceiling or not vel_dir_facing_up):
+				var slide_motion := collision.remainder.slide(collision.normal)
+				if slide_motion.dot(linear_velocity) > 0.0:
+					motion = slide_motion
+				else:
+					motion = Vector3.ZERO
+				if slide_on_ceiling and on_ceiling:
+					if vel_dir_facing_up:
+						linear_velocity = linear_velocity.slide(collision.normal)
+					else: # remove x when fall to avoid acceleration
+						linear_velocity = up_direction * up_direction.dot(linear_velocity)
+			else:
+				motion = collision.remainder
+				if on_ceiling and not slide_on_ceiling and vel_dir_facing_up:
+					linear_velocity = linear_velocity.slide(up_direction)
+					motion = motion.slide(up_direction)
+			last_travel = collision.travel
+		elif floor_constant_speed and first_slide and _on_floor_if_snapped():
+			can_apply_constant_speed = false
+			sliding_enabled = true # avoid to apply two time constant speed
+			position = previous_pos
+			var slide: Vector3 = motion.slide(prev_floor_normal).normalized()
+			if not slide.is_equal_approx(Vector3.ZERO):
+				motion = slide * (motion_slided_up.length())  # alternative use original_motion.length() to also take account of the y value
+				collision = true
+		can_apply_constant_speed = not can_apply_constant_speed and not sliding_enabled
+		sliding_enabled = true
+		first_slide = false
+
+		# debug
+		if not motion.is_equal_approx(Vector3.ZERO): debug_last_motion = motion.normalized()
+
+		if not collision or motion.is_equal_approx(Vector3.ZERO):
+			break
+
+	floor_snap()
+	if on_floor and not vel_dir_facing_up:
+		linear_velocity = linear_velocity.slide(up_direction)
+
+func _set_collision_direction(collision):
+	last_collision = collision
+	debug_last_normal = collision.normal # for debug
+	var is_top_down = up_direction == Vector3.ZERO
+	if not is_top_down and acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		on_floor = true
+		floor_normal = collision.normal
+		platform_velocity = collision.collider_velocity
+		if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+			platform_layer = collision.collider.get_collision_layer()
+		platform_rid = collision.get_collider_rid()
+
+	elif not is_top_down and acos(collision.normal.dot(-up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		on_ceiling = true
+	else:
+		platform_velocity = collision.collider_velocity
+		if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+			platform_layer = collision.collider.get_collision_layer()
+		platform_rid = collision.get_collider_rid()
+		on_wall = true
+
+func _on_floor_if_snapped():
+	if up_direction == Vector3.ZERO or is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor or linear_velocity.dot(up_direction) > 0: return false
+	var collision := custom_move_and_collide(up_direction * -floor_snap_length, true)
+	if collision:
+		if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+			return true
+
+	return false
+
+func floor_snap():
+	if up_direction == Vector3.ZERO or is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor or linear_velocity.dot(up_direction) > 0: return
+
+	var collision := custom_move_and_collide(up_direction * -floor_snap_length, true)
+	if collision:
+		var collision_angle = acos(collision.normal.dot(up_direction))
+		if collision_angle <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+			on_floor = true
+			floor_normal = collision.normal
+			platform_velocity = collision.collider_velocity
+			if collision.collider.has_method("get_collision_layer"): # need a way to retrieve collision layer for tilemap
+				platform_layer = collision.collider.get_collision_layer()
+			platform_rid = collision.get_collider_rid()
+			var travelled = collision.travel
+
+			if floor_stop_on_slope:
+				# move and collide may stray the object a bit because of pre un-stucking,
+				# so only ensure that motion happens on floor direction in this case.
+				if travelled.length() > get_safe_margin() :
+					travelled = up_direction * up_direction.dot(travelled)
+				else:
+					travelled = Vector3.ZERO
+
+			position = position + travelled
+
+func util_on_floor():
+	if use_build_in: return is_on_floor()
+	return on_floor
+
+func util_on_wall():
+	if use_build_in: return is_on_wall()
+	return on_wall
+
+func util_on_floor_only():
+	if use_build_in: return is_on_floor_only()
+	return on_floor and not on_wall and not on_ceiling
+
+func util_on_wall_only():
+	if use_build_in: return is_on_wall_only()
+	return on_wall and not on_floor and not on_ceiling

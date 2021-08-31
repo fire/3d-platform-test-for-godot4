@@ -193,15 +193,15 @@ func custom_move_and_slide():
 	#else:
 	#	emit_signal("follow_platform", "/")
 
-	if motion_mode == 1:
-		_move_and_slide_grounded()
+	if motion_mode == 0:
+		_move_and_slide_grounded(current_platform_velocity)
 	else:
-		_move_and_slide_free(current_platform_velocity)
+		_move_and_slide_free()
 	
 	if not on_floor and not on_wall:
 		linear_velocity = linear_velocity + current_platform_velocity # Add last floor velocity when just left a moving platform
 
-func _move_and_slide_grounded():
+func _move_and_slide_free():
 	var motion = linear_velocity * get_physics_process_delta_time()
 		
 	platform_rid = RID()
@@ -231,7 +231,7 @@ func _move_and_slide_grounded():
 		if  not collision or motion.is_equal_approx(Vector3()):
 			break
 	
-func _move_and_slide_free(current_platform_velocity):
+func _move_and_slide_grounded(current_platform_velocity):
 	
 	var motion = linear_velocity * get_physics_process_delta_time()
 	var motion_slided_up = motion.slide(up_direction)

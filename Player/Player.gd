@@ -170,7 +170,11 @@ var was_on_floor = false
 func custom_move_and_slide():
 	var current_platform_velocity = platform_velocity
 	if (on_floor or on_wall) and platform_rid.get_id():
-		var excluded = (moving_platform_ignore_layers & platform_layer) != 0
+		var excluded = false
+		if on_floor:
+			excluded = (moving_platform_floor_layers & platform_layer) == 0
+		elif on_wall:
+			excluded = (moving_platform_wall_layers & platform_layer) == 0
 		if not excluded:
 			var bs := PhysicsServer3D.body_get_direct_state(platform_rid)
 			if bs:
@@ -189,25 +193,21 @@ func custom_move_and_slide():
 	#else:
 	#	emit_signal("follow_platform", "/")
 
-	var motion = linear_velocity * get_physics_process_delta_time()
-	
-	var prev_floor_normal = floor_normal
-	var prev_platform_rid: = platform_rid
-	var prev_platform_layer = platform_layer
-	
-	platform_rid = RID()
-	floor_normal = Vector3.ZERO
-	platform_velocity = Vector3.ZERO
-	
 	if motion_mode == 1:
-		_move_and_slide_top_down_game(motion)
+		_move_and_slide_grounded()
 	else:
-		_move_and_slide_side_game(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer)
+		_move_and_slide_free(current_platform_velocity)
 	
 	if not on_floor and not on_wall:
 		linear_velocity = linear_velocity + current_platform_velocity # Add last floor velocity when just left a moving platform
 
-func _move_and_slide_top_down_game(motion):
+func _move_and_slide_grounded():
+	var motion = linear_velocity * get_physics_process_delta_time()
+		
+	platform_rid = RID()
+	floor_normal = Vector3.ZERO
+	platform_velocity = Vector3.ZERO
+	
 	var first_slide = true
 	for _i in range(max_slides):
 		var collision = custom_move_and_collide(motion, false, false)
@@ -231,8 +231,18 @@ func _move_and_slide_top_down_game(motion):
 		if  not collision or motion.is_equal_approx(Vector3()):
 			break
 	
-func _move_and_slide_side_game(motion, current_platform_velocity, prev_floor_normal, prev_platform_rid, prev_platform_layer):
+func _move_and_slide_free(current_platform_velocity):
+	
+	var motion = linear_velocity * get_physics_process_delta_time()
 	var motion_slided_up = motion.slide(up_direction)
+	
+	var prev_floor_normal = floor_normal
+	var prev_platform_rid: = platform_rid
+	var prev_platform_layer = platform_layer
+	
+	platform_rid = RID()
+	floor_normal = Vector3.ZERO
+	platform_velocity = Vector3.ZERO
 	
 	var vel_dir_facing_up := linear_velocity.dot(up_direction) > 0
 	# No sliding on first attempt to keep floor motion stable when possible.

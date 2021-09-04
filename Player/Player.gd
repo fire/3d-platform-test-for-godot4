@@ -61,10 +61,11 @@ func _physics_process(delta):
 		floor_snap_length = Global.FLOOR_SNAP_LENGTH
 	else:
 		floor_snap_length = 0
-	#if util_on_floor():
-	#	linear_velocity.y = linear_velocity.y - 0.01
+	
+	if not util_on_floor():
+		linear_velocity.y = linear_velocity.y - Global.GRAVITY
 	#else:
-	linear_velocity.y = linear_velocity.y - Global.GRAVITY
+	#	linear_velocity.y = linear_velocity.y - 0.01
 	
 	if Input.is_action_just_pressed("jump"):
 		if Global.INFINITE_JUMP or util_on_floor():
@@ -118,7 +119,7 @@ func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_can
 
 		if p_cancel_sliding:
 			# When motion is null, recovery is the resulting motion.
-			var motion_normal = Vector2.ZERO
+			var motion_normal = Vector3.ZERO
 			if motion_length > 0.00001:
 				motion_normal = p_motion / motion_length
 
@@ -255,6 +256,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 		var previous_pos = position
 
 		var collision = custom_move_and_collide(motion, false, not sliding_enabled)
+
 		if collision:
 			_set_collision_direction(collision)
 #		

@@ -406,17 +406,18 @@ func floor_snap():
 			position = position + travelled
 
 func util_on_floor():
-	if use_build_in: return is_on_floor()
+	if Global.USE_NATIVE_METHOD: return is_on_floor()
 	return on_floor
 
 func util_on_wall():
-	if use_build_in: return is_on_wall()
+	if Global.USE_NATIVE_METHOD: return is_on_wall()
 	return on_wall
 
 func util_on_floor_only():
-	if use_build_in: return is_on_floor_only()
+	if Global.USE_NATIVE_METHOD: return is_on_floor_only()
 	return on_floor and not on_wall and not on_ceiling
 
 func util_on_wall_only():
-	if use_build_in: return is_on_wall_only()
+	if Global.USE_NATIVE_METHOD: return is_on_wall_only()
 	return on_wall and not on_floor and not on_ceiling
+

@@ -286,11 +286,16 @@ func _move_and_slide_grounded(current_platform_velocity):
 					var horizontal_normal := collision.normal.slide(up_direction).normalized()
 					var motion_angle = abs(acos(-horizontal_normal.dot(horizontal_motion.normalized())))
 					#print(str(rad2deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
+
+					if was_on_floor:
+						position = position - collision.travel
+						if transform.basis.z.dot(collision.normal) > 0.99:
+							motion = motion.slide(up_direction)
 					
 					# Avoid to move forward on a wall if floor_block_on_wall is true.
 					if not on_floor and motion_angle < 0.5 * PI:
 						
-						position = position - collision.travel	
+						#position = position - collision.travel	
 						if was_on_floor and not on_floor and not vel_dir_facing_up:
 							#var forward := collision.normal.slide(up_direction).normalized()
 
@@ -323,15 +328,16 @@ func _move_and_slide_grounded(current_platform_velocity):
 							print("ELSE " + str(was_on_floor) + " " + str(not on_floor) + " " + str(not vel_dir_facing_up) )
 							
 
-						# prevent to move against the wall in the air
-						#elif not on_floor:
-						var forward := collision.normal.slide(up_direction).normalized()
-						motion = motion.slide(forward)
-						if linear_velocity.dot(forward) < 0:
-							linear_velocity = linear_velocity.slide(forward.abs())
-						#var slide_motion := up_direction.cross(collision.normal);
-						#motion = slide_motion * motion.dot(slide_motion.normalized());
-						apply_default_sliding = false
+					# prevent to move against the wall in the air
+					#elif not on_floor:
+					
+					var forward := collision.normal.slide(up_direction).normalized()
+					motion = motion.slide(forward)
+					if linear_velocity.dot(forward) < 0:
+						linear_velocity = linear_velocity.slide(forward.abs())
+					#var slide_motion := up_direction.cross(collision.normal);
+					#motion = slide_motion * motion.dot(slide_motion.normalized());
+					apply_default_sliding = false
 				
 				# Stop horizontal motion when under wall slide threshold.
 				if !motion.is_equal_approx(Vector3.ZERO) and first_slide && (wall_min_slide_angle > 0.0) && !collision.normal.is_equal_approx(up_direction):

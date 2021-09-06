@@ -271,63 +271,104 @@ func _move_and_slide_grounded(current_platform_velocity):
 			if collision.remainder.is_equal_approx(Vector3.ZERO):
 				motion = Vector3.ZERO
 				break
-			# move on floor only checks
-			if floor_block_on_wall and on_wall and motion_slided_up.dot(collision.normal) <= 0:
-				# constraints to move only
-				if was_on_floor and not on_floor and not vel_dir_facing_up:
 				
-					if collision.travel.length() <= get_safe_margin(): # If the movement is large the body can be prevented from reaching the walls.
-						position = position - collision.travel
-					on_floor = true
-					platform_rid = prev_platform_rid
-					platform_layer = prev_platform_layer
-					platform_velocity = current_platform_velocity
-					floor_normal = prev_floor_normal
+			# Apply regular sliding by default.
+			var apply_default_sliding := true
+			
+			# move on floor only checks
+			if on_wall and motion_slided_up.dot(collision.normal) <= 0:
+				
+				if floor_block_on_wall:
 					
-					var motion_angle = collision.get_angle(-linear_velocity.slide(up_direction).normalized())
-					if (motion_angle > wall_min_slide_angle):
-						var slide : Vector3 = up_direction.cross(collision.normal)
-						motion = slide * motion.dot(slide.normalized())
-					else:
-						linear_velocity = Vector3.ZERO
-						motion = Vector2.ZERO
-						break
+					# Needs horizontal motion from current motion instead of motion_slide_up
+					# to properly test the angle and avoid standing on slopes
+					var horizontal_motion := motion.slide(up_direction)
+					var horizontal_normal := collision.normal.slide(up_direction).normalized()
+					var motion_angle = abs(acos(-horizontal_normal.dot(horizontal_motion.normalized())))
+					#print(str(rad2deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
 					
-					#break
-				# prevent to move against the wall in the air
-				elif not on_floor:
-					var forward = collision.normal.slide(up_direction).normalized()
-					motion = collision.remainder.slide(collision.normal)
-					if linear_velocity.dot(forward) < 0:
-						linear_velocity = linear_velocity.slide(forward.abs())
+					# Avoid to move forward on a wall if floor_block_on_wall is true.
+					if not on_floor and motion_angle < 0.5 * PI:
+						
+						position = position - collision.travel	
+						if was_on_floor and not on_floor and not vel_dir_facing_up:
+							#var forward := collision.normal.slide(up_direction).normalized()
 
-				# keep motion
-				else:
-					motion = collision.remainder
+							#if collision.travel.length() <= get_safe_margin(): # If the movement is large the body can be prevented from reaching the walls.
+						
+							# Ici test chute
+							#apply_default_sliding = false
+							#motion  = Vector3()
+							#linear_velocity  = Vector3()
+							#motion = motion.slide(forward)
+							#if linear_velocity.dot(forward) < 0:
+							#	linear_velocity = linear_velocity.slide(forward.abs())
+							#motion.z = 0
+							#apply_default_sliding = false
+							
+							#if motion.dot(up_direction) >= 0:
+							#	print("!! Motion " + str(motion.normalized()) + " " + str(motion.normalized().dot(up_direction)))
+								#print(up_direction)
+							#else:
+							#	print("Motion " + str(motion.normalized()) + " " + str(motion.normalized().dot(up_direction)))
+							
+							var has_floor := custom_move_and_collide(up_direction * -Global.GRAVITY, true, true)
+							if has_floor:
+								on_floor = true
+								platform_rid = prev_platform_rid
+								platform_layer = prev_platform_layer
+								platform_velocity = current_platform_velocity
+								floor_normal = prev_floor_normal
+						else:
+							print("ELSE " + str(was_on_floor) + " " + str(not on_floor) + " " + str(not vel_dir_facing_up) )
+							
+
+						# prevent to move against the wall in the air
+						#elif not on_floor:
+						var forward := collision.normal.slide(up_direction).normalized()
+						motion = motion.slide(forward)
+						if linear_velocity.dot(forward) < 0:
+							linear_velocity = linear_velocity.slide(forward.abs())
+						#var slide_motion := up_direction.cross(collision.normal);
+						#motion = slide_motion * motion.dot(slide_motion.normalized());
+						apply_default_sliding = false
+				
+				# Stop horizontal motion when under wall slide threshold.
+				if !motion.is_equal_approx(Vector3.ZERO) and first_slide && (wall_min_slide_angle > 0.0) && !collision.normal.is_equal_approx(up_direction):
+					var horizontal_normal: Vector3 = collision.normal.slide(up_direction).normalized()
+					var motion_angle = abs(acos(-horizontal_normal.dot(motion_slided_up.normalized())))	
+					if motion_angle < wall_min_slide_angle:
+						motion = up_direction * motion.dot(up_direction)
+						linear_velocity = up_direction * linear_velocity.dot(up_direction)
+						apply_default_sliding = false
+					
+				
 			# constant Speed when the slope is upward
 			elif floor_constant_speed and util_on_floor_only() and can_apply_constant_speed and was_on_floor and motion.dot(collision.normal) < 0:
 				can_apply_constant_speed = false
 				var slide: Vector3 = collision.remainder.slide(collision.normal).normalized()
 				if not slide.is_equal_approx(Vector3.ZERO):
 					motion = slide * (motion_slided_up.length() - collision.travel.slide(up_direction).length() - last_travel.slide(up_direction).length())
-			# prevent to move against wall
-			elif (sliding_enabled or not on_floor) and (not on_ceiling or slide_on_ceiling or not vel_dir_facing_up):
-				var slide_motion := collision.remainder.slide(collision.normal)
-				if slide_motion.dot(linear_velocity) > 0.0:
-					motion = slide_motion
+					apply_default_sliding = false;
+			
+			if apply_default_sliding: 
+				if (sliding_enabled or not on_floor) and (not on_ceiling or slide_on_ceiling or not vel_dir_facing_up):
+					var slide_motion := collision.remainder.slide(collision.normal)
+					if slide_motion.dot(linear_velocity) > 0.0:
+						motion = slide_motion
+					else:
+						motion = Vector3.ZERO
+					if slide_on_ceiling and on_ceiling:
+						if vel_dir_facing_up:
+							linear_velocity = linear_velocity.slide(collision.normal)
+						else: # remove x when fall to avoid acceleration
+							linear_velocity = up_direction * up_direction.dot(linear_velocity)
 				else:
-					motion = Vector3.ZERO
-				if slide_on_ceiling and on_ceiling:
-					if vel_dir_facing_up:
-						linear_velocity = linear_velocity.slide(collision.normal)
-					else: # remove x when fall to avoid acceleration
-						linear_velocity = up_direction * up_direction.dot(linear_velocity)
-			else:
-				motion = collision.remainder
-				if on_ceiling and not slide_on_ceiling and vel_dir_facing_up:
-					linear_velocity = linear_velocity.slide(up_direction)
-					motion = motion.slide(up_direction)
-			last_travel = collision.travel
+					motion = collision.remainder
+					if on_ceiling and not slide_on_ceiling and vel_dir_facing_up:
+						linear_velocity = linear_velocity.slide(up_direction)
+						motion = motion.slide(up_direction)
+				last_travel = collision.travel
 		elif floor_constant_speed and first_slide and _on_floor_if_snapped():
 			can_apply_constant_speed = false
 			sliding_enabled = true # avoid to apply two time constant speed
@@ -420,4 +461,3 @@ func util_on_floor_only():
 func util_on_wall_only():
 	if Global.USE_NATIVE_METHOD: return is_on_wall_only()
 	return on_wall and not on_floor and not on_ceiling
-

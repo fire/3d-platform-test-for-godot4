@@ -285,38 +285,14 @@ func _move_and_slide_grounded(current_platform_velocity):
 					var horizontal_motion := motion.slide(up_direction)
 					var horizontal_normal := collision.normal.slide(up_direction).normalized()
 					var motion_angle = abs(acos(-horizontal_normal.dot(horizontal_motion.normalized())))
-					#print(str(rad2deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
 
-					if was_on_floor:
-						position = position - collision.travel
-						if transform.basis.z.dot(collision.normal) > 0.99:
+					if motion_slided_up.dot(collision.normal) < 0 and not vel_dir_facing_up and was_on_floor:
+						if on_floor and transform.basis.z.dot(collision.normal) > 0.99 :
+							position = position - collision.travel
+							# Stop Y only when wall is in front of the player (allow sliding en lateral collision)
 							motion = motion.slide(up_direction)
-					
-					# Avoid to move forward on a wall if floor_block_on_wall is true.
-					if not on_floor and motion_angle < 0.5 * PI:
-						
-						#position = position - collision.travel	
-						if was_on_floor and not on_floor and not vel_dir_facing_up:
-							#var forward := collision.normal.slide(up_direction).normalized()
-
-							#if collision.travel.length() <= get_safe_margin(): # If the movement is large the body can be prevented from reaching the walls.
-						
-							# Ici test chute
-							#apply_default_sliding = false
-							#motion  = Vector3()
-							#linear_velocity  = Vector3()
-							#motion = motion.slide(forward)
-							#if linear_velocity.dot(forward) < 0:
-							#	linear_velocity = linear_velocity.slide(forward.abs())
-							#motion.z = 0
-							#apply_default_sliding = false
 							
-							#if motion.dot(up_direction) >= 0:
-							#	print("!! Motion " + str(motion.normalized()) + " " + str(motion.normalized().dot(up_direction)))
-								#print(up_direction)
-							#else:
-							#	print("Motion " + str(motion.normalized()) + " " + str(motion.normalized().dot(up_direction)))
-							
+						if  not on_floor and transform.basis.z.dot(collision.normal) > 0.99  :
 							var has_floor := custom_move_and_collide(up_direction * -Global.GRAVITY, true, true)
 							if has_floor:
 								on_floor = true
@@ -324,20 +300,9 @@ func _move_and_slide_grounded(current_platform_velocity):
 								platform_layer = prev_platform_layer
 								platform_velocity = current_platform_velocity
 								floor_normal = prev_floor_normal
-						else:
-							print("ELSE " + str(was_on_floor) + " " + str(not on_floor) + " " + str(not vel_dir_facing_up) )
-							
-
-					# prevent to move against the wall in the air
-					#elif not on_floor:
-					
-					var forward := collision.normal.slide(up_direction).normalized()
-					motion = motion.slide(forward)
-					if linear_velocity.dot(forward) < 0:
-						linear_velocity = linear_velocity.slide(forward.abs())
-					#var slide_motion := up_direction.cross(collision.normal);
-					#motion = slide_motion * motion.dot(slide_motion.normalized());
-					apply_default_sliding = false
+								
+						var forward := collision.normal.slide(up_direction).normalized()
+						motion = motion.slide(forward)
 				
 				# Stop horizontal motion when under wall slide threshold.
 				if !motion.is_equal_approx(Vector3.ZERO) and first_slide && (wall_min_slide_angle > 0.0) && !collision.normal.is_equal_approx(up_direction):

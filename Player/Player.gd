@@ -260,10 +260,12 @@ func _move_and_slide_grounded(current_platform_velocity):
 		if collision:
 			_set_collision_direction(collision)
 #		
-			if on_floor and floor_stop_on_slope and (linear_velocity.normalized() + up_direction).length() < 0.01:
-				if collision.travel.length() > get_safe_margin():
-					position = position - collision.travel.slide(up_direction)
-				else:
+			if on_floor and floor_stop_on_slope and (linear_velocity.normalized() + up_direction).length() < get_safe_margin():
+				#if collision.travel.length() > get_safe_margin():
+				#	position = position - collision.travel.slide(up_direction)
+				#else:
+				#	position = position - collision.travel
+				if collision.travel.length() < get_safe_margin():
 					position = position - collision.travel
 				linear_velocity = Vector3.ZERO
 				motion = Vector3.ZERO
@@ -287,11 +289,12 @@ func _move_and_slide_grounded(current_platform_velocity):
 					var motion_angle = abs(acos(-horizontal_normal.dot(horizontal_motion.normalized())))
 					#print(str(rad2deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
 					
-					if was_on_floor:
+					if was_on_floor and transform.basis.z.dot(collision.normal) > 0.5:
+						motion = motion.slide(up_direction)
+						#apply_default_sliding = false
+					if was_on_floor and not on_floor:
 						position = position - collision.travel
-						if transform.basis.z.dot(collision.normal) > 0.5:
-							motion = motion.slide(up_direction)
-							apply_default_sliding = false
+						
 							
 					# Avoid to move forward on a wall if floor_block_on_wall is true.
 					if not on_floor and motion_angle < 0.5 * PI:

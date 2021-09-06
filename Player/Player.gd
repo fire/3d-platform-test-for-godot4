@@ -312,7 +312,9 @@ func _move_and_slide_grounded(current_platform_velocity):
 						motion = motion.slide(forward)
 						if linear_velocity.dot(forward) < 0:
 							linear_velocity = linear_velocity.slide(forward.abs())
-						apply_default_sliding = false
+						# Avoid being stopped during a fall
+						if motion.dot(collision.normal) >= 0:
+							apply_default_sliding = false
 				
 				# Stop horizontal motion when under wall slide threshold.
 				if !motion.is_equal_approx(Vector3.ZERO) and first_slide && (wall_min_slide_angle > 0.0) && !collision.normal.is_equal_approx(up_direction):

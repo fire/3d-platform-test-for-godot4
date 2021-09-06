@@ -285,24 +285,34 @@ func _move_and_slide_grounded(current_platform_velocity):
 					var horizontal_motion := motion.slide(up_direction)
 					var horizontal_normal := collision.normal.slide(up_direction).normalized()
 					var motion_angle = abs(acos(-horizontal_normal.dot(horizontal_motion.normalized())))
-
-					if motion_slided_up.dot(collision.normal) < 0 and not vel_dir_facing_up and was_on_floor:
-						if on_floor and transform.basis.z.dot(collision.normal) > 0.99 :
-							position = position - collision.travel
-							# Stop Y only when wall is in front of the player (allow sliding en lateral collision)
+					#print(str(rad2deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
+					
+					if was_on_floor:
+						position = position - collision.travel
+						if transform.basis.z.dot(collision.normal) > 0.5:
 							motion = motion.slide(up_direction)
+							apply_default_sliding = false
 							
-						if  not on_floor and transform.basis.z.dot(collision.normal) > 0.99  :
+					# Avoid to move forward on a wall if floor_block_on_wall is true.
+					if not on_floor and motion_angle < 0.5 * PI:
+						
+						#position = position - collision.travel	
+						if was_on_floor and not on_floor and not vel_dir_facing_up:
+
 							var has_floor := custom_move_and_collide(up_direction * -Global.GRAVITY, true, true)
-							if has_floor:
+							# if no collision, or
+							if has_floor and has_floor.travel.dot(up_direction) > -0.02: 
 								on_floor = true
 								platform_rid = prev_platform_rid
 								platform_layer = prev_platform_layer
 								platform_velocity = current_platform_velocity
 								floor_normal = prev_floor_normal
-								
+
 						var forward := collision.normal.slide(up_direction).normalized()
 						motion = motion.slide(forward)
+						if linear_velocity.dot(forward) < 0:
+							linear_velocity = linear_velocity.slide(forward.abs())
+						apply_default_sliding = false
 				
 				# Stop horizontal motion when under wall slide threshold.
 				if !motion.is_equal_approx(Vector3.ZERO) and first_slide && (wall_min_slide_angle > 0.0) && !collision.normal.is_equal_approx(up_direction):

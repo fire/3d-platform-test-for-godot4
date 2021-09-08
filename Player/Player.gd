@@ -4,12 +4,14 @@ extends CharacterBody3D
 
 var mouse_sensitivity: float = 0.0005
 # Debug
-var last_collision
+var debug_last_collision
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _input(event):
+	if Input.is_action_just_pressed("reset"):
+		position = Vector3(0,1,0)
 	if Input.is_action_just_pressed("ui_cancel"):
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -74,7 +76,7 @@ func _physics_process(delta):
 	
 	if Global.USE_NATIVE_METHOD:
 		move_and_slide()
-		last_collision = get_last_slide_collision()
+		debug_last_collision = get_last_slide_collision()
 	else:
 		custom_move_and_slide()	
 
@@ -153,8 +155,8 @@ func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_can
 		
 # Debug
 var debug_top_down_angle:= 0.0
-var debug_last_normal = Vector2.ZERO
-var debug_last_motion = Vector2.ZERO
+var debug_last_normal = Vector3.ZERO
+var debug_last_motion = Vector3.ZERO
 var debug_auto_move := false
 var use_build_in := false
 
@@ -251,16 +253,16 @@ func _move_and_slide_grounded(current_platform_velocity):
 	var can_apply_constant_speed := sliding_enabled
 	var first_slide := true
 	var last_travel := Vector3.ZERO
-
+	debug_last_motion = Vector3.ZERO
 	for _i in range(max_slides):
 		var previous_pos = position
 
 		var collision = custom_move_and_collide(motion, false, not sliding_enabled)
-
+		
 		if collision:
 			_set_collision_direction(collision)
-#		
-			if on_floor and floor_stop_on_slope and (linear_velocity.normalized() + up_direction).length() < get_safe_margin():
+			
+			if on_floor and floor_stop_on_slope and (linear_velocity.normalized() + up_direction).length() < 0.1:
 				#if collision.travel.length() > get_safe_margin():
 				#	position = position - collision.travel.slide(up_direction)
 				#else:
@@ -272,6 +274,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 				break
 			if collision.remainder.is_equal_approx(Vector3.ZERO):
 				motion = Vector3.ZERO
+				debug_last_motion = collision.travel.normalized()
 				break
 				
 			# Apply regular sliding by default.
@@ -378,7 +381,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 		linear_velocity = linear_velocity.slide(up_direction)
 
 func _set_collision_direction(collision):
-	last_collision = collision
+	debug_last_collision = collision
 	debug_last_normal = collision.normal # for debug
 	var is_top_down = up_direction == Vector3.ZERO
 	if not is_top_down and acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
@@ -447,3 +450,15 @@ func util_on_floor_only():
 func util_on_wall_only():
 	if Global.USE_NATIVE_METHOD: return is_on_wall_only()
 	return on_wall and not on_floor and not on_ceiling
+
+func util_latest_collision():
+	if Global.USE_NATIVE_METHOD:
+		return get_last_slide_collision()
+	else:
+		return debug_last_collision
+
+func util_last_motion():
+	if Global.USE_NATIVE_METHOD:
+		return get_latest_motion().normalized()
+	else:
+		return debug_last_motion

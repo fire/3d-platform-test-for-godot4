@@ -1,5 +1,6 @@
 extends Node
 
+var DRAW_DEBUG_LINE := true
 # player
 var GRAVITY := 0.98
 var WALK_SPEED := 6

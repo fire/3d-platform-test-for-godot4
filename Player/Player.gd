@@ -26,7 +26,7 @@ func _input(event):
 	if Input.is_action_just_pressed("center"):
 		rotation.y = snapped(rotation.y, deg2rad(90))
 
-func _process(delta):
+func _process(_delta):
 	floor_block_on_wall = Global.FLOOR_BLOCK_ON_WALL
 	floor_constant_speed = Global.FLOOR_CONSTANT_SPEED
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
@@ -94,7 +94,7 @@ class CustomKinematicCollision3D:
 	func get_collider_rid():
 		return collision_rid
 
-func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, max_collisions = 1, p_cancel_sliding: bool = true, exlude = []):
+func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_cancel_sliding: bool = true, exlude = []):
 	var gt := get_global_transform()
 
 	var margin = get_safe_margin()
@@ -190,7 +190,7 @@ func custom_move_and_slide():
 	on_wall = false
 
 	if not current_platform_velocity.is_equal_approx(Vector3.ZERO): # apply platform movement first
-		custom_move_and_collide(current_platform_velocity * get_physics_process_delta_time(), 1, false, false, [platform_rid])
+		custom_move_and_collide(current_platform_velocity * get_physics_process_delta_time(), false, false, [platform_rid])
 #	emit_signal("follow_platform", str(current_platform_velocity * get_physics_process_delta_time()))
 	#else:
 	#	emit_signal("follow_platform", "/")

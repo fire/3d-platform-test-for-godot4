@@ -1,6 +1,6 @@
 extends Control
 
-@onready var player = owner
+@onready var player = owner.get_node("Player")
 var width = 2
 var lenght = 1
 
@@ -10,7 +10,6 @@ func _process(_delta):
 func _draw():
 	if Global.DRAW_DEBUG_LINE: 
 		var origin = player.global_transform.origin + Vector3(0, -0.8, 0)
-		var collision_normal = player.util_latest_collision()
 		var camera = player.camera
 		var start = camera.unproject_position(origin)
 		
@@ -19,19 +18,18 @@ func _draw():
 		var vel_end = camera.unproject_position(origin + player.linear_velocity.normalized() * lenght)
 		draw_debug_line(start, vel_end,  Color(0, 1, 0))
 		
-		# Collision
-		if player.util_latest_collision():
-			var col_end = camera.unproject_position(origin + player.util_latest_collision().normal * lenght)
-			draw_debug_line(start, col_end,  Color(1, 0, 0))
-		
 		# Motion
 		if player.util_last_motion():
 			var motion_end = camera.unproject_position(origin + player.util_last_motion() * lenght)
 			draw_debug_line(start, motion_end,  Color(0, 0, 1))
-			
-		# Last collision
-		var last_col = player.util_latest_collision()
+
+		# Collisions
+		var last_col = player.util_latest_collision() if Global.CURRENT_DEBUG_SLIDE == -1 else player.get_slide_collision(Global.CURRENT_DEBUG_SLIDE)
 		if last_col:
+			# Main collision
+			var col_end = camera.unproject_position(origin + last_col.normal * lenght)
+			draw_debug_line(start, col_end,  Color(1, 0, 0))
+			
 			for i in last_col.get_collision_count():
 				if i > 0:
 					var motion_end = camera.unproject_position(origin + last_col.get_normal(i) * lenght)

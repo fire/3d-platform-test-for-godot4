@@ -4,7 +4,7 @@ extends CharacterBody3D
 
 var mouse_sensitivity: float = 0.0005
 # Debug
-var debug_last_collision
+var debug_last_collision: KinematicCollision3D
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -74,11 +74,10 @@ func _physics_process(delta):
 			linear_velocity.y = Global.JUMP_FORCE
 			floor_snap_length = 0
 	
-	if Global.USE_NATIVE_METHOD:
-		move_and_slide()
-		debug_last_collision = get_last_slide_collision()
-	else:
-		custom_move_and_slide()	
+	#if Global.USE_NATIVE_METHOD:
+	move_and_slide()
+	#else:
+#		custom_move_and_slide()	
 
 class CustomKinematicCollision3D:
 	var position : Vector3
@@ -95,7 +94,7 @@ class CustomKinematicCollision3D:
 	func get_collider_rid():
 		return collision_rid
 
-func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_cancel_sliding: bool = true, exlude = []):
+func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, max_collisions = 1, p_cancel_sliding: bool = true, exlude = []):
 	var gt := get_global_transform()
 
 	var margin = get_safe_margin()
@@ -114,9 +113,9 @@ func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_can
 		if colliding:
 			# Can't just use margin as a threshold because collision depth is calculated on unsafe motion,
 			# so even in normal resting cases the depth can be a bit more than the margin.
-			precision = precision + motion_length * (result.collision_unsafe_fraction - result.collision_safe_fraction)
+			precision = precision + motion_length * (result.unsafe_fraction - result.safe_fraction)
 
-			if result.collision_depth > margin + precision:
+			if result.get_collision_depth(0) > margin + precision:
 				p_cancel_sliding = false
 
 		if p_cancel_sliding:
@@ -191,7 +190,7 @@ func custom_move_and_slide():
 	on_wall = false
 
 	if not current_platform_velocity.is_equal_approx(Vector3.ZERO): # apply platform movement first
-		custom_move_and_collide(current_platform_velocity * get_physics_process_delta_time(), false, false, [platform_rid])
+		custom_move_and_collide(current_platform_velocity * get_physics_process_delta_time(), 1, false, false, [platform_rid])
 #	emit_signal("follow_platform", str(current_platform_velocity * get_physics_process_delta_time()))
 	#else:
 	#	emit_signal("follow_platform", "/")
@@ -297,8 +296,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 						#apply_default_sliding = false
 					if was_on_floor and not on_floor:
 						position = position - collision.travel
-						
-							
+					
 					# Avoid to move forward on a wall if floor_block_on_wall is true.
 					if not on_floor and motion_angle < 0.5 * PI:
 						
@@ -435,6 +433,14 @@ func floor_snap():
 
 			position = position + travelled
 
+func _debug_col_type(i):
+	var col = get_last_slide_collision()
+	if cos(col.get_normal(i).dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
+		return "floor"
+	if cos(col.get_normal(i).dot(-up_direction)) <= floor_max_angle:
+		return "ceiling"
+	return "wall"
+		
 func util_on_floor():
 	if Global.USE_NATIVE_METHOD: return is_on_floor()
 	return on_floor

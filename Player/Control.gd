@@ -1,7 +1,7 @@
 extends Control
 
 @onready var player = owner
-var width = 4
+var width = 2
 var lenght = 1
 
 func _process(_delta):
@@ -28,6 +28,17 @@ func _draw():
 		if player.util_last_motion():
 			var motion_end = camera.unproject_position(origin + player.util_last_motion() * lenght)
 			draw_debug_line(start, motion_end,  Color(0, 0, 1))
+			
+		# Last collision
+		var last_col = player.util_latest_collision()
+		if last_col:
+			for i in last_col.get_collision_count():
+				if i > 0:
+					var motion_end = camera.unproject_position(origin + last_col.get_normal(i) * lenght)
+					draw_debug_line(start, motion_end,  Color(1, 0.584, 0.039))
+			for i in last_col.get_collision_count():
+				var point = camera.unproject_position(last_col.get_position(i))
+				draw_circle(point, 4, Color(1, 0.039, 0.882))
 
 func draw_debug_line(start, end, color):
 	draw_line(start, end, color, width)

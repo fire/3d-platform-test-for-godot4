@@ -15,7 +15,7 @@ var APPLY_AIR_FRICTION := true
 
 var INFINITE_JUMP := true
 
-var USE_NATIVE_METHOD := false
+var USE_NATIVE_METHOD := true
 
 # move and slide
 var APPLY_SNAP := true

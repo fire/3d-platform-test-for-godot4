@@ -55,6 +55,7 @@ surface_material_override/0 = SubResource( "StandardMaterial3D_lwflw" )
 script = null
 
 [node name="Debug" type="CanvasLayer" parent="."]
+process_mode = 3
 script = null
 
 [node name="Control" type="Control" parent="Debug"]

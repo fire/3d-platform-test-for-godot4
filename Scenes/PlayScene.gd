@@ -29,6 +29,8 @@ func _on_WallMinAngleSlideSlider_value_changed(value):
 func _on_StopSlopeButton_toggled(button_pressed):
 	Global.FLOOR_STOP_ON_SLOPE = button_pressed
 
-func _on_CheckButton_toggled(button_pressed):
+func _on_DrawLines_toggled(button_pressed):
 	Global.DRAW_DEBUG_LINE = button_pressed
 
+func _on_DrawHUD_toggled(button_pressed):
+	Global.DRAW_HUD = button_pressed

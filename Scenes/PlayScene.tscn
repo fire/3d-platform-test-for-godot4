@@ -276,7 +276,6 @@ offset_top = 18.7398
 offset_right = 1266.72
 offset_bottom = 58.7398
 focus_mode = 0
-pressed = true
 text = "Use GD method"
 align = 2
 script = null
@@ -290,7 +289,6 @@ offset_top = 53.7398
 offset_right = 1264.72
 offset_bottom = 93.7398
 focus_mode = 0
-pressed = true
 text = "Floor Snap"
 align = 2
 script = null
@@ -360,7 +358,6 @@ offset_top = 228.106
 offset_right = 1262.46
 offset_bottom = 268.106
 focus_mode = 0
-pressed = true
 text = "Acceleration"
 align = 2
 script = null
@@ -425,7 +422,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CheckButton" type="CheckButton" parent="Texts"]
+[node name="DrawLines" type="CheckButton" parent="Texts"]
 offset_left = 1096.86
 offset_top = 331.786
 offset_right = 1256.86
@@ -433,6 +430,19 @@ offset_bottom = 371.786
 focus_mode = 0
 pressed = true
 text = "Draw lines"
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DrawHUD" type="CheckButton" parent="Texts"]
+offset_left = 1096.86
+offset_top = 367.786
+offset_right = 1256.86
+offset_bottom = 407.786
+focus_mode = 0
+pressed = true
+text = "Draw HUD"
 script = null
 __meta__ = {
 "_edit_use_anchors_": false
@@ -451,4 +461,5 @@ script = ExtResource( "24_4v7fj" )
 [connection signal="toggled" from="Texts/AccelerationButton" to="." method="_on_AccelerationButton_toggled"]
 [connection signal="value_changed" from="Texts/MaxFloorAngleSlider" to="." method="_on_MaxFloorAngleSlider_value_changed"]
 [connection signal="value_changed" from="Texts/WallMinAngleSlideSlider" to="." method="_on_WallMinAngleSlideSlider_value_changed"]
-[connection signal="toggled" from="Texts/CheckButton" to="." method="_on_CheckButton_toggled"]
+[connection signal="toggled" from="Texts/DrawLines" to="." method="_on_DrawLines_toggled"]
+[connection signal="toggled" from="Texts/DrawHUD" to="." method="_on_DrawHUD_toggled"]

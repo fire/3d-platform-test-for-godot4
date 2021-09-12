@@ -2,6 +2,7 @@ extends CharacterBody3D
 @onready var camera_pivot = $CameraPivot
 @onready var camera = $CameraPivot/SpringArm3D/Camera3D
 
+var prev_position = Vector3()
 var mouse_sensitivity: float = 0.0005
 # Debug
 var debug_last_collision: KinematicCollision3D
@@ -36,6 +37,7 @@ func _process(_delta):
 	up_direction = Global.UP_DIRECTION
 
 func _physics_process(delta):
+	prev_position = position
 	var direction = Vector3()
 	if Input.is_action_pressed("move_forward"):
 		direction -= transform.basis.z

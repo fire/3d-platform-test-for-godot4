@@ -1,6 +1,7 @@
 extends Node
 
 var DRAW_DEBUG_LINE := true
+var DRAW_HUD := true
 var CURRENT_DEBUG_SLIDE := -1
 # player
 var GRAVITY := 0.98
@@ -11,7 +12,7 @@ var GROUND_ACCELERATION := 15
 var AIR_ACCELERATION := 5
 var FLOOR_SNAP_LENGTH := .01
 
-var APPLY_ACCELERATION := true
+var APPLY_ACCELERATION := false
 var APPLY_AIR_FRICTION := true
 
 var INFINITE_JUMP := true
@@ -19,7 +20,7 @@ var INFINITE_JUMP := true
 var USE_NATIVE_METHOD := true
 
 # move and slide
-var APPLY_SNAP := true
+var APPLY_SNAP := false
 var FLOOR_CONSTANT_SPEED := true
 var FLOOR_STOP_ON_SLOPE := true
 var FLOOR_BLOCK_ON_WALL := true

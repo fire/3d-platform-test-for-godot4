@@ -218,9 +218,10 @@ __meta__ = {
 }
 
 [node name="Command" type="Label" parent="Texts"]
-offset_top = 684.0
-offset_right = 1280.0
-offset_bottom = 710.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -26.0
 theme_override_colors/font_color = Color(0.027451, 0.407843, 1, 1)
 text = "Move: ZQSD /  Jump: Space / Run: Shift / Pause Mode: P / Enter: reset position"
 align = 1
@@ -246,10 +247,14 @@ __meta__ = {
 }
 
 [node name="Pause" type="Label" parent="Texts"]
-offset_left = 15.1291
-offset_top = 644.21
-offset_right = 119.129
-offset_bottom = 670.21
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 17.0
+offset_top = -87.0
+offset_right = 178.0
+offset_bottom = -49.0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 25
 text = "PAUSE MODE"
 structured_text_bidi_override_options = []
@@ -259,10 +264,14 @@ __meta__ = {
 }
 
 [node name="PauseCommand" type="Label" parent="Texts"]
-offset_left = 17.0
-offset_top = 681.0
-offset_right = 182.0
-offset_bottom = 704.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -50.0
+offset_right = 308.0
+offset_bottom = -24.0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 text = "Press the O to move to the next frame"
 structured_text_bidi_override_options = []
 script = null
@@ -270,12 +279,22 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="GDScriptButton" type="CheckButton" parent="Texts"]
-offset_left = 1065.72
-offset_top = 18.7398
-offset_right = 1266.72
-offset_bottom = 58.7398
+[node name="VBox" type="VBoxContainer" parent="Texts"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -242.0
+offset_bottom = 492.0
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GDScriptButton" type="CheckButton" parent="Texts/VBox"]
+offset_right = 242.0
+offset_bottom = 40.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 text = "Use GD method"
 align = 2
 script = null
@@ -283,12 +302,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SnapButton" type="CheckButton" parent="Texts"]
-offset_left = 1099.72
-offset_top = 53.7398
-offset_right = 1264.72
-offset_bottom = 93.7398
+[node name="SnapButton" type="CheckButton" parent="Texts/VBox"]
+offset_top = 44.0
+offset_right = 242.0
+offset_bottom = 84.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 text = "Floor Snap"
 align = 2
 script = null
@@ -296,12 +316,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="StopSlopeButton" type="CheckButton" parent="Texts"]
-offset_left = 1079.86
-offset_top = 85.4664
-offset_right = 1264.86
-offset_bottom = 125.466
+[node name="StopSlopeButton" type="CheckButton" parent="Texts/VBox"]
+offset_top = 88.0
+offset_right = 242.0
+offset_bottom = 128.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 pressed = true
 text = "Stop on Slope"
 align = 2
@@ -310,26 +331,28 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ConstantSpeedButton" type="CheckButton" parent="Texts"]
-offset_left = 1072.37
-offset_top = 117.993
-offset_right = 1266.37
-offset_bottom = 157.993
+[node name="ConstantSpeedButton" type="CheckButton" parent="Texts/VBox"]
+offset_top = 132.0
+offset_right = 242.0
+offset_bottom = 172.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 pressed = true
-text = "Constan Speed"
+text = "Constant Speed"
 align = 2
 script = null
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="OnFloorButton" type="CheckButton" parent="Texts"]
-offset_left = 1072.37
-offset_top = 153.993
-offset_right = 1266.37
-offset_bottom = 193.993
+[node name="OnFloorButton" type="CheckButton" parent="Texts/VBox"]
+offset_top = 176.0
+offset_right = 242.0
+offset_bottom = 216.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 pressed = true
 text = "On floor only"
 align = 2
@@ -338,12 +361,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="AirFrictionButton" type="CheckButton" parent="Texts"]
-offset_left = 1072.37
-offset_top = 190.993
-offset_right = 1266.37
-offset_bottom = 230.993
+[node name="AirFrictionButton" type="CheckButton" parent="Texts/VBox"]
+offset_top = 220.0
+offset_right = 242.0
+offset_bottom = 260.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 pressed = true
 text = "Air friction"
 align = 2
@@ -352,12 +376,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="AccelerationButton" type="CheckButton" parent="Texts"]
-offset_left = 1068.46
-offset_top = 228.106
-offset_right = 1262.46
-offset_bottom = 268.106
+[node name="AccelerationButton" type="CheckButton" parent="Texts/VBox"]
+offset_top = 264.0
+offset_right = 242.0
+offset_bottom = 304.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 text = "Acceleration"
 align = 2
 script = null
@@ -365,28 +390,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MaxFloorAngleSlider" type="HSlider" parent="Texts"]
-offset_left = 1204.0
-offset_top = 272.0
-offset_right = 1252.0
-offset_bottom = 288.0
-focus_mode = 0
-step = 5.0
-value = 45.0
+[node name="MaxFloorAngle" type="HBoxContainer" parent="Texts/VBox"]
+offset_top = 308.0
+offset_right = 242.0
+offset_bottom = 334.0
 script = null
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="MaxFloorAngleLabel" type="Label" parent="Texts"]
-anchor_left = 0.857645
-anchor_top = 0.329572
-anchor_right = 0.888895
-anchor_bottom = 0.361516
-offset_left = -58.6982
-offset_top = 29.2533
-offset_right = 56.3018
-offset_bottom = 32.2536
+[node name="MaxFloorAngleLabel" type="Label" parent="Texts/VBox/MaxFloorAngle"]
+offset_right = 160.0
+offset_bottom = 26.0
+rect_min_size = Vector2(160, 0)
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 text = "Floor max angle: 45°"
 structured_text_bidi_override_options = []
 script = null
@@ -394,27 +409,31 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
-[node name="WallMinAngleSlideSlider" type="HSlider" parent="Texts"]
-offset_left = 1205.25
-offset_top = 299.476
-offset_right = 1253.25
-offset_bottom = 315.476
+[node name="MaxFloorAngleSlider" type="HSlider" parent="Texts/VBox/MaxFloorAngle"]
+offset_left = 164.0
+offset_right = 242.0
+offset_bottom = 16.0
 focus_mode = 0
+size_flags_horizontal = 3
 step = 5.0
+value = 45.0
 script = null
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="WallMinAngleSlideLabel" type="Label" parent="Texts"]
-anchor_left = 0.857645
-anchor_top = 0.329572
-anchor_right = 0.888895
-anchor_bottom = 0.361516
-offset_left = -49.9561
-offset_top = 56.7291
-offset_right = 65.0439
-offset_bottom = 59.7294
+[node name="WallMinAngle" type="HBoxContainer" parent="Texts/VBox"]
+offset_top = 338.0
+offset_right = 242.0
+offset_bottom = 364.0
+script = null
+
+[node name="WallMinAngleSlideLabel" type="Label" parent="Texts/VBox/WallMinAngle"]
+offset_right = 160.0
+offset_bottom = 26.0
+rect_min_size = Vector2(160, 0)
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 text = "Min slide angle: 0°"
 structured_text_bidi_override_options = []
 script = null
@@ -422,27 +441,43 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DrawLines" type="CheckButton" parent="Texts"]
-offset_left = 1096.86
-offset_top = 331.786
-offset_right = 1256.86
-offset_bottom = 371.786
+[node name="WallMinAngleSlideSlider" type="HSlider" parent="Texts/VBox/WallMinAngle"]
+offset_left = 164.0
+offset_right = 242.0
+offset_bottom = 16.0
 focus_mode = 0
-pressed = true
-text = "Draw lines"
+size_flags_horizontal = 3
+step = 5.0
 script = null
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DrawHUD" type="CheckButton" parent="Texts"]
-offset_left = 1096.86
-offset_top = 367.786
-offset_right = 1256.86
-offset_bottom = 407.786
+[node name="DrawLines" type="CheckButton" parent="Texts/VBox"]
+offset_top = 368.0
+offset_right = 242.0
+offset_bottom = 408.0
 focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
+pressed = true
+text = "Draw lines"
+align = 2
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DrawHUD" type="CheckButton" parent="Texts/VBox"]
+offset_top = 412.0
+offset_right = 242.0
+offset_bottom = 452.0
+focus_mode = 0
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
 pressed = true
 text = "Draw HUD"
+align = 2
 script = null
 __meta__ = {
 "_edit_use_anchors_": false
@@ -452,14 +487,14 @@ __meta__ = {
 process_mode = 3
 script = ExtResource( "24_4v7fj" )
 
-[connection signal="toggled" from="Texts/GDScriptButton" to="." method="_on_GDScriptButton_toggled"]
-[connection signal="toggled" from="Texts/SnapButton" to="." method="_on_SnapButton_toggled"]
-[connection signal="toggled" from="Texts/StopSlopeButton" to="." method="_on_StopSlopeButton_toggled"]
-[connection signal="toggled" from="Texts/ConstantSpeedButton" to="." method="_on_ConstantSpeedButton_toggled"]
-[connection signal="toggled" from="Texts/OnFloorButton" to="." method="_on_OnFloorButton_toggled"]
-[connection signal="toggled" from="Texts/AirFrictionButton" to="." method="_on_AirFrictionButton_toggled"]
-[connection signal="toggled" from="Texts/AccelerationButton" to="." method="_on_AccelerationButton_toggled"]
-[connection signal="value_changed" from="Texts/MaxFloorAngleSlider" to="." method="_on_MaxFloorAngleSlider_value_changed"]
-[connection signal="value_changed" from="Texts/WallMinAngleSlideSlider" to="." method="_on_WallMinAngleSlideSlider_value_changed"]
-[connection signal="toggled" from="Texts/DrawLines" to="." method="_on_DrawLines_toggled"]
-[connection signal="toggled" from="Texts/DrawHUD" to="." method="_on_DrawHUD_toggled"]
+[connection signal="toggled" from="Texts/VBox/GDScriptButton" to="." method="_on_GDScriptButton_toggled"]
+[connection signal="toggled" from="Texts/VBox/SnapButton" to="." method="_on_SnapButton_toggled"]
+[connection signal="toggled" from="Texts/VBox/StopSlopeButton" to="." method="_on_StopSlopeButton_toggled"]
+[connection signal="toggled" from="Texts/VBox/ConstantSpeedButton" to="." method="_on_ConstantSpeedButton_toggled"]
+[connection signal="toggled" from="Texts/VBox/OnFloorButton" to="." method="_on_OnFloorButton_toggled"]
+[connection signal="toggled" from="Texts/VBox/AirFrictionButton" to="." method="_on_AirFrictionButton_toggled"]
+[connection signal="toggled" from="Texts/VBox/AccelerationButton" to="." method="_on_AccelerationButton_toggled"]
+[connection signal="value_changed" from="Texts/VBox/MaxFloorAngle/MaxFloorAngleSlider" to="." method="_on_MaxFloorAngleSlider_value_changed"]
+[connection signal="value_changed" from="Texts/VBox/WallMinAngle/WallMinAngleSlideSlider" to="." method="_on_WallMinAngleSlideSlider_value_changed"]
+[connection signal="toggled" from="Texts/VBox/DrawLines" to="." method="_on_DrawLines_toggled"]
+[connection signal="toggled" from="Texts/VBox/DrawHUD" to="." method="_on_DrawHUD_toggled"]

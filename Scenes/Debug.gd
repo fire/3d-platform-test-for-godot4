@@ -41,7 +41,7 @@ func _process(_delta):
 		for i in last_col.get_collision_count():
 			var _norm = "(%.2f, %.2f, %.2f)" % [last_col.get_normal(i).x, last_col.get_normal(i).y, last_col.get_normal(i).z]
 			var _angle = "%.2f°" % rad2deg(last_col.get_angle(i))
-			var _type = _player._debug_col_type(i)
+			var _type = _player._debug_col_type(i, Global.CURRENT_DEBUG_SLIDE)
 			_debug_dict["Col %d normal" % i  ] = str(_norm) + " - angle: " + str(_angle) + " - type : " + str(_type)
 	text = ""
 	for i in _debug_dict:

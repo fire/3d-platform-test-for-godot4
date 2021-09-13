@@ -35,10 +35,8 @@ func _physics_process(_delta):
 		paused = !paused
 		get_tree().paused = paused
 		step_once = false
-		if paused:
-			_update_label(true)
-		else:
-			_update_label(false)
+		_update_label(paused)
+		Global.CURRENT_DEBUG_SLIDE = -1
 	
 	if paused:
 		if step_once:

@@ -435,8 +435,8 @@ func floor_snap():
 
 			position = position + travelled
 
-func _debug_col_type(i):
-	var col = get_last_slide_collision()
+func _debug_col_type(i, slide = -1):
+	var col = get_last_slide_collision() if slide < 0 else get_slide_collision(slide)
 	if cos(col.get_normal(i).dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
 		return "floor"
 	if cos(col.get_normal(i).dot(-up_direction)) <= floor_max_angle:

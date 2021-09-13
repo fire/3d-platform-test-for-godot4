@@ -10,12 +10,11 @@ func _process(_delta):
 		text = ""
 		return
 	_debug_dict["Position"] =  "(%f, %f, %f)" % [_player.global_transform.origin.x, _player.global_transform.origin.y, _player.global_transform.origin.z]
-	_debug_dict["Velocity"] = "(%.2f, %.2f, %.2f)" % [_player.linear_velocity.x, _player.linear_velocity.y, _player.linear_velocity.z]
-	_debug_dict["Velocity length"] = snapped(_player.linear_velocity.length(), 0.001)
 	_debug_dict["Speed"] = snapped( (_player.prev_position - _player.position).length() * 100 , 0.001)
-	var last_motion = _player.util_last_motion().normalized()
+	_debug_dict["Velocity"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [_player.linear_velocity.x, _player.linear_velocity.y, _player.linear_velocity.z, _player.linear_velocity.length()]
+	var last_motion = _player.util_last_motion()
 	if last_motion:
-		_debug_dict["Last Motion"] = "(%.2f, %.2f, %.2f)" % [last_motion.x, last_motion.y, last_motion.z]
+		_debug_dict["Last Motion"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [last_motion.x, last_motion.y, last_motion.z, last_motion.length()]
 	else:
 		_debug_dict["Last Motion"] = "N/A"
 

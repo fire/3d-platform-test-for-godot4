@@ -20,7 +20,7 @@ func _draw():
 		
 		# Motion
 		if player.util_last_motion():
-			var motion_end = camera.unproject_position(origin + player.util_last_motion() * lenght)
+			var motion_end = camera.unproject_position(origin + player.util_last_motion().normalized() * lenght)
 			draw_debug_line(start, motion_end,  Color(0, 0, 1))
 
 		# Collisions

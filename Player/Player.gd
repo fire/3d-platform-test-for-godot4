@@ -68,8 +68,8 @@ func _physics_process(delta):
 	
 	if not util_on_floor():
 		linear_velocity.y = linear_velocity.y - Global.GRAVITY
-	else:
-		linear_velocity.y = -Global.GRAVITY
+	#else:
+	#	linear_velocity.y = -Global.GRAVITY
 	
 	if Input.is_action_just_pressed("jump"):
 		if Global.INFINITE_JUMP or util_on_floor():

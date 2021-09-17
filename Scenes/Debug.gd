@@ -39,7 +39,11 @@ func _process(_delta):
 		_debug_dict["Collision count"] = last_col.get_collision_count()
 		for i in last_col.get_collision_count():
 			var _norm = "(%.2f, %.2f, %.2f)" % [last_col.get_normal(i).x, last_col.get_normal(i).y, last_col.get_normal(i).z]
-			var _angle = "%.2f°" % rad2deg(last_col.get_angle(i))
+			var _angle = ""
+			if _player.motion_mode == 0:
+				_angle = "%.2f°" % rad2deg(last_col.get_angle(i))
+			else:
+				_angle = "%.2f°" % rad2deg(acos(last_col.normal.dot(-_player.linear_velocity.normalized())))
 			var _type = _player._debug_col_type(i, Global.CURRENT_DEBUG_SLIDE)
 			_debug_dict["Col %d normal" % i  ] = str(_norm) + " - angle: " + str(_angle) + " - type : " + str(_type)
 	text = ""

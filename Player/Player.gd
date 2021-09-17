@@ -467,6 +467,6 @@ func util_latest_collision():
 
 func util_last_motion():
 	if Global.USE_NATIVE_METHOD:
-		return get_latest_motion()
+		return get_last_motion()
 	else:
 		return debug_last_motion

@@ -1,0 +1,176 @@
+[gd_scene load_steps=15 format=3 uid="uid://dtaupff5nmlo8"]
+
+[ext_resource type="Script" path="res://Scenes/Player.gd" id="1_267n8"]
+[ext_resource type="Script" path="res://Scenes/CanvasLayer.gd" id="2_eeoi6"]
+[ext_resource type="Script" path="res://Scenes/Debug.gd" id="3_2ckwu"]
+[ext_resource type="Script" path="res://Scenes/DebugDraw.gd" id="3_xx3k7"]
+[ext_resource type="Script" path="res://Others/Pause.gd" id="5_vjdx8"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_32vh5"]
+sky_top_color = Color(0.309804, 0.443137, 0.807843, 1)
+sky_horizon_color = Color(0.592157, 0.733333, 0.721569, 1)
+ground_bottom_color = Color(0.121569, 0.121569, 0.129412, 1)
+ground_horizon_color = Color(0.572549, 0.713726, 0.733333, 1)
+
+[sub_resource type="Sky" id="Sky_bmww2"]
+sky_material = SubResource( "ProceduralSkyMaterial_32vh5" )
+
+[sub_resource type="Environment" id="Environment_ifqcd"]
+background_mode = 1
+background_color = Color(0.0509804, 0.294118, 0.639216, 1)
+sky = SubResource( "Sky_bmww2" )
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_sky_contribution = 0.0
+ambient_light_energy = 0.38
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xyqsl"]
+albedo_color = Color(0.65098, 0.686275, 0.701961, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c3coa"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_358bx"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1fhd0"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_a7ym1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lvv40"]
+albedo_color = Color(1, 0, 0.0235294, 1)
+metallic = 1.0
+roughness = 0.0
+
+[node name="FreeScene" type="Node3D"]
+script = null
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( "Environment_ifqcd" )
+script = null
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -130.411)
+use_collision = true
+size = Vector3(100, 2, 100)
+material = SubResource( "StandardMaterial3D_xyqsl" )
+script = null
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.707107, -0.707107, 0, 0.707107, -0.707107, 0, 15.4844, -329.176)
+use_collision = true
+size = Vector3(100, 2, 100)
+material = SubResource( "StandardMaterial3D_c3coa" )
+script = null
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707106, -0.707106, 0, 0.707106, 0.707106, 0, 10.1341, -334.907)
+use_collision = true
+size = Vector3(100, 2, 100)
+material = SubResource( "StandardMaterial3D_358bx" )
+script = null
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.4294, 0)
+motion_mode = 1
+script = ExtResource( "1_267n8" )
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.969382, 1.15108, 11.1727)
+current = true
+script = null
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1.91069e-15, -4.37114e-08, 1, -1, -4.37114e-08, -4.23656e-23, 4.37114e-08, -1, -4.37114e-08, 0, 0, 0)
+shape = SubResource( "CapsuleShape3D_1fhd0" )
+script = null
+
+[node name="Mesh" type="Node3D" parent="Player"]
+transform = Transform3D(1.91069e-15, -4.37114e-08, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, -4.37114e-08, 0, 0, 0)
+script = null
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="Player/Mesh"]
+mesh = SubResource( "CapsuleMesh_a7ym1" )
+material = SubResource( "StandardMaterial3D_lvv40" )
+script = null
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.00646159, -0.395836, 0.918299, 0.0374687, 0.917577, 0.395788, -0.999277, 0.0369649, 0.00890245, 78.8991, 29.2542, 0)
+light_color = Color(1, 0.980392, 0.905882, 1)
+shadow_enabled = true
+script = null
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+script = ExtResource( "2_eeoi6" )
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Ceci est un test"
+structured_text_bidi_override_options = []
+script = ExtResource( "3_2ckwu" )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource( "3_xx3k7" )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Node" type="Node" parent="CanvasLayer"]
+script = ExtResource( "5_vjdx8" )
+
+[node name="Pause" type="Label" parent="CanvasLayer"]
+offset_left = 30.2933
+offset_top = 639.803
+offset_right = 367.293
+offset_bottom = 746.803
+text = "PAUSE MODE"
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PauseCommand" type="Label" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MinSlideLabel" type="Label" parent="CanvasLayer"]
+offset_left = 1150.19
+offset_top = 22.0864
+offset_right = 1251.19
+offset_bottom = 48.0864
+text = "Min slide: 15°"
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MinSlide" type="HSlider" parent="CanvasLayer"]
+anchor_bottom = 0.011
+offset_left = 1157.4
+offset_top = 51.0
+offset_right = 1243.4
+offset_bottom = 59.08
+focus_mode = 0
+value = 15.0
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="value_changed" from="CanvasLayer/MinSlide" to="CanvasLayer" method="_on_MinSlide_value_changed"]

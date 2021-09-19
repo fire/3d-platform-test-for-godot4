@@ -5,20 +5,22 @@ extends Label
 var _debug_dict: Dictionary = {}
 
 func _process(_delta):
+	var floor_v: Vector3 = _player.get_platform_velocity()
 	_debug_dict.clear()
 	if not Global.DRAW_HUD:
 		text = ""
 		return
 	_debug_dict["Position"] =  "(%f, %f, %f)" % [_player.global_transform.origin.x, _player.global_transform.origin.y, _player.global_transform.origin.z]
-	_debug_dict["Speed"] = snapped( (_player.prev_position - _player.position).length() * 100 , 0.001)
+	var speed_length = (_player.prev_position - _player.position + floor_v * get_physics_process_delta_time()).length()
+	_debug_dict["Speed"] = snapped(speed_length * 100 , 0.001)
+	
 	_debug_dict["Velocity"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [_player.linear_velocity.x, _player.linear_velocity.y, _player.linear_velocity.z, _player.linear_velocity.length()]
 	var last_motion = _player.util_last_motion()
 	if last_motion:
 		_debug_dict["Last Motion"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [last_motion.x, last_motion.y, last_motion.z, last_motion.length()]
 	else:
 		_debug_dict["Last Motion"] = "N/A"
-
-	var floor_v: Vector3 = _player.get_platform_velocity()
+	
 	_debug_dict["Platform Velocity"] = "(%.2f, %.2f, %.2f)" % [floor_v.x, floor_v.y, floor_v.z]
 	
 	_debug_dict["Is On Floor"] = _player.util_on_floor()

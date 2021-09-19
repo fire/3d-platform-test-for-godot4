@@ -14,7 +14,6 @@ func _draw():
 		var start = camera.unproject_position(origin)
 		
 		# Velocity
-		
 		var vel_end = camera.unproject_position(origin + player.linear_velocity.normalized() * lenght)
 		draw_debug_line(start, vel_end,  Color(0, 1, 0))
 		

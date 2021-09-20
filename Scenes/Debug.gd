@@ -16,9 +16,12 @@ func _process(_delta):
 	
 	_debug_dict["Velocity"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [_player.linear_velocity.x, _player.linear_velocity.y, _player.linear_velocity.z, _player.linear_velocity.length()]
 	var last_motion = _player.util_last_motion()
+	var real_movement = _player.get_real_velocity()
 	if last_motion:
+		_debug_dict["Real Velocity"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [real_movement.x, real_movement.y, real_movement.z, real_movement.length()]
 		_debug_dict["Last Motion"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [last_motion.x, last_motion.y, last_motion.z, last_motion.length()]
 	else:
+		_debug_dict["Real full motion"] = "N/A"
 		_debug_dict["Last Motion"] = "N/A"
 	
 	_debug_dict["Platform Velocity"] = "(%.2f, %.2f, %.2f)" % [floor_v.x, floor_v.y, floor_v.z]

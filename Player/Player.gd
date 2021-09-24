@@ -32,6 +32,7 @@ func _process(_delta):
 	floor_constant_speed = Global.FLOOR_CONSTANT_SPEED
 	floor_max_angle = Global.FLOOR_MAX_ANGLE
 	floor_stop_on_slope = Global.FLOOR_STOP_ON_SLOPE
+	floor_snap_length = Global.SNAP_LENGTH 
 	slide_on_ceiling = Global.SLIDE_ON_CEILING
 	wall_min_slide_angle = Global.WALL_MIN_SLIDE_ANGLE
 	up_direction = Global.UP_DIRECTION
@@ -61,15 +62,8 @@ func _physics_process(delta):
 			linear_velocity.x = lerp(linear_velocity.x, direction.x * speed, accel * delta)
 			linear_velocity.z = lerp(linear_velocity.z, direction.z * speed, accel * delta)
 	
-	if Global.APPLY_SNAP:
-		floor_snap_length = Global.FLOOR_SNAP_LENGTH
-	else:
-		floor_snap_length = 0
-	
 	if not util_on_floor():
 		linear_velocity.y = linear_velocity.y - Global.GRAVITY
-	#else:
-	#	linear_velocity.y = -Global.GRAVITY
 	
 	if Input.is_action_just_pressed("jump"):
 		if Global.INFINITE_JUMP or util_on_floor():

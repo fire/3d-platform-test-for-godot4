@@ -20,7 +20,7 @@ var INFINITE_JUMP := true
 var USE_NATIVE_METHOD := true
 
 # move and slide
-var APPLY_SNAP := false
+var SNAP_LENGTH := 0.0
 var FLOOR_CONSTANT_SPEED := true
 var FLOOR_STOP_ON_SLOPE := true
 var FLOOR_BLOCK_ON_WALL := true

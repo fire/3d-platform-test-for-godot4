@@ -302,24 +302,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SnapButton" type="CheckButton" parent="Texts/VBox"]
+[node name="StopSlopeButton" type="CheckButton" parent="Texts/VBox"]
 offset_top = 44.0
 offset_right = 242.0
 offset_bottom = 84.0
-focus_mode = 0
-theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
-theme_override_constants/outline_size = 2
-text = "Floor Snap"
-align = 2
-script = null
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="StopSlopeButton" type="CheckButton" parent="Texts/VBox"]
-offset_top = 88.0
-offset_right = 242.0
-offset_bottom = 128.0
 focus_mode = 0
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
@@ -332,9 +318,9 @@ __meta__ = {
 }
 
 [node name="ConstantSpeedButton" type="CheckButton" parent="Texts/VBox"]
-offset_top = 132.0
+offset_top = 88.0
 offset_right = 242.0
-offset_bottom = 172.0
+offset_bottom = 128.0
 focus_mode = 0
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
@@ -347,9 +333,9 @@ __meta__ = {
 }
 
 [node name="OnFloorButton" type="CheckButton" parent="Texts/VBox"]
-offset_top = 176.0
+offset_top = 132.0
 offset_right = 242.0
-offset_bottom = 216.0
+offset_bottom = 172.0
 focus_mode = 0
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
@@ -362,9 +348,9 @@ __meta__ = {
 }
 
 [node name="AirFrictionButton" type="CheckButton" parent="Texts/VBox"]
-offset_top = 220.0
+offset_top = 176.0
 offset_right = 242.0
-offset_bottom = 260.0
+offset_bottom = 216.0
 focus_mode = 0
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
@@ -377,9 +363,9 @@ __meta__ = {
 }
 
 [node name="AccelerationButton" type="CheckButton" parent="Texts/VBox"]
-offset_top = 264.0
+offset_top = 220.0
 offset_right = 242.0
-offset_bottom = 304.0
+offset_bottom = 260.0
 focus_mode = 0
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
@@ -390,10 +376,44 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MaxFloorAngle" type="HBoxContainer" parent="Texts/VBox"]
-offset_top = 308.0
+[node name="FloorSnap" type="HBoxContainer" parent="Texts/VBox"]
+offset_top = 264.0
 offset_right = 242.0
-offset_bottom = 334.0
+offset_bottom = 290.0
+script = null
+
+[node name="FloorSnapLabel" type="Label" parent="Texts/VBox/FloorSnap"]
+offset_right = 160.0
+offset_bottom = 26.0
+rect_min_size = Vector2(160, 0)
+theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
+theme_override_constants/outline_size = 2
+text = "Floor snap: 0.0"
+align = 2
+structured_text_bidi_override_options = []
+script = null
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="FloorSnapSlider" type="HSlider" parent="Texts/VBox/FloorSnap"]
+offset_left = 164.0
+offset_right = 242.0
+offset_bottom = 16.0
+focus_mode = 0
+size_flags_horizontal = 3
+max_value = 20.0
+step = 0.1
+allow_greater = true
+script = null
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MaxFloorAngle" type="HBoxContainer" parent="Texts/VBox"]
+offset_top = 294.0
+offset_right = 242.0
+offset_bottom = 320.0
 script = null
 
 [node name="MaxFloorAngleLabel" type="Label" parent="Texts/VBox/MaxFloorAngle"]
@@ -403,6 +423,7 @@ rect_min_size = Vector2(160, 0)
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
 text = "Floor max angle: 45°"
+align = 2
 structured_text_bidi_override_options = []
 script = null
 __meta__ = {
@@ -423,9 +444,9 @@ __meta__ = {
 }
 
 [node name="WallMinAngle" type="HBoxContainer" parent="Texts/VBox"]
-offset_top = 338.0
+offset_top = 324.0
 offset_right = 242.0
-offset_bottom = 364.0
+offset_bottom = 350.0
 script = null
 
 [node name="WallMinAngleSlideLabel" type="Label" parent="Texts/VBox/WallMinAngle"]
@@ -435,6 +456,7 @@ rect_min_size = Vector2(160, 0)
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
 text = "Min slide angle: 0°"
+align = 2
 structured_text_bidi_override_options = []
 script = null
 __meta__ = {
@@ -454,9 +476,9 @@ __meta__ = {
 }
 
 [node name="DrawLines" type="CheckButton" parent="Texts/VBox"]
-offset_top = 368.0
+offset_top = 354.0
 offset_right = 242.0
-offset_bottom = 408.0
+offset_bottom = 394.0
 focus_mode = 0
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
@@ -469,9 +491,9 @@ __meta__ = {
 }
 
 [node name="DrawHUD" type="CheckButton" parent="Texts/VBox"]
-offset_top = 412.0
+offset_top = 398.0
 offset_right = 242.0
-offset_bottom = 452.0
+offset_bottom = 438.0
 focus_mode = 0
 theme_override_colors/font_outline_color = Color(0.2, 0.2, 0.2, 1)
 theme_override_constants/outline_size = 2
@@ -488,12 +510,12 @@ process_mode = 3
 script = ExtResource( "24_4v7fj" )
 
 [connection signal="toggled" from="Texts/VBox/GDScriptButton" to="." method="_on_GDScriptButton_toggled"]
-[connection signal="toggled" from="Texts/VBox/SnapButton" to="." method="_on_SnapButton_toggled"]
 [connection signal="toggled" from="Texts/VBox/StopSlopeButton" to="." method="_on_StopSlopeButton_toggled"]
 [connection signal="toggled" from="Texts/VBox/ConstantSpeedButton" to="." method="_on_ConstantSpeedButton_toggled"]
 [connection signal="toggled" from="Texts/VBox/OnFloorButton" to="." method="_on_OnFloorButton_toggled"]
 [connection signal="toggled" from="Texts/VBox/AirFrictionButton" to="." method="_on_AirFrictionButton_toggled"]
 [connection signal="toggled" from="Texts/VBox/AccelerationButton" to="." method="_on_AccelerationButton_toggled"]
+[connection signal="value_changed" from="Texts/VBox/FloorSnap/FloorSnapSlider" to="." method="_on_FloorSnapSlider_value_changed"]
 [connection signal="value_changed" from="Texts/VBox/MaxFloorAngle/MaxFloorAngleSlider" to="." method="_on_MaxFloorAngleSlider_value_changed"]
 [connection signal="value_changed" from="Texts/VBox/WallMinAngle/WallMinAngleSlideSlider" to="." method="_on_WallMinAngleSlideSlider_value_changed"]
 [connection signal="toggled" from="Texts/VBox/DrawLines" to="." method="_on_DrawLines_toggled"]

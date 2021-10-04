@@ -14,14 +14,14 @@ func _draw():
 		var start = camera.unproject_position(origin)
 		
 		# Velocity
-		var vel_end = camera.unproject_position(origin + player.linear_velocity.normalized() * lenght)
+		var vel_end = camera.unproject_position(origin + player.motion_velocity.normalized() * lenght)
 		draw_debug_line(start, vel_end,  Color(0, 1, 0))
 		
 		# Motion
 		if player.util_last_motion():
 			var motion_end = camera.unproject_position(origin + player.util_last_motion().normalized() * lenght)
 			draw_debug_line(start, motion_end,  Color(0, 0, 1))
-
+			
 		# Collisions
 		var last_col = player.util_latest_collision() if Global.CURRENT_DEBUG_SLIDE == -1 else player.get_slide_collision(Global.CURRENT_DEBUG_SLIDE)
 		if last_col:

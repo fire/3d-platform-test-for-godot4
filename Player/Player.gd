@@ -94,12 +94,18 @@ func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_can
 	var gt := get_global_transform()
 
 	var margin = get_safe_margin()
+	
+	var params := PhysicsTestMotionParameters3D.new()
+	params.from = gt
+	params.motion = p_motion
+	params.margin = margin
+	params.exclude_bodies = exlude
 
 	var result := PhysicsTestMotionResult3D.new()
-	var colliding := PhysicsServer3D.body_test_motion(get_rid(), gt, p_motion, margin, result, false, exlude)
+	var colliding := PhysicsServer3D.body_test_motion(get_rid(), params, result)
 
-	var result_motion := result.travel
-	var result_remainder := result.remainder
+	var result_motion := result.get_travel()
+	var result_remainder := result.get_remainder()
 
 	if p_cancel_sliding:
 
@@ -121,8 +127,8 @@ func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_can
 				motion_normal = p_motion / motion_length
 
 			# Check depth of recovery.
-			var projected_length := result.travel.dot(motion_normal)
-			var recovery := result.travel - motion_normal * projected_length
+			var projected_length := result.get_travel().dot(motion_normal)
+			var recovery := result.get_travel() - motion_normal * projected_length
 			var recovery_length := recovery.length()
 			# Fixes cases where canceling slide causes the motion to go too deep into the ground,
 			# Becauses we're only taking rest information into account and not general recovery.

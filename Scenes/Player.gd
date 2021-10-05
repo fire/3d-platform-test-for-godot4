@@ -17,7 +17,7 @@ func _physics_process(delta):
 	_get_input()
 	transform.basis = transform.basis.rotated(transform.basis.x, pitch_input * pitch_speed * delta)
 	transform.basis = transform.basis.rotated(Vector3.UP, turn_input * turn_speed * delta)
-	linear_velocity = -transform.basis.z * speed
+	motion_velocity = -transform.basis.z * speed
 	move_and_slide()
 	
 func _get_input():

@@ -26,7 +26,7 @@ func _draw():
 		var last_col = player.util_latest_collision() if Global.CURRENT_DEBUG_SLIDE == -1 else player.get_slide_collision(Global.CURRENT_DEBUG_SLIDE)
 		if last_col:
 			# Main collision
-			var col_end = camera.unproject_position(origin + last_col.normal * lenght)
+			var col_end = camera.unproject_position(origin + last_col.get_normal() * lenght)
 			draw_debug_line(start, col_end,  Color(1, 0, 0))
 			
 			for i in last_col.get_collision_count():

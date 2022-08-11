@@ -150,10 +150,7 @@ dagger.#Plan & {
             contents: dagger.#FS
         }
         filesystem: {
-            "build": write: contents: actions.build.export.directories."/groups/"
-        }
-        filesystem: {
-            ".scons_cache": write: contents: actions.build.export.directories."/groups/godot/.scons_cache"
+            "build": write: contents: actions.build.export.directories."/groups/project"
         }
     }
 	actions: {
@@ -182,10 +179,7 @@ dagger.#Plan & {
                         """#     
                     export: 
                         directories: 
-                            "/groups/": dagger.#FS
-                    export: 
-                        directories: 
-                            "/groups/godot/.scons_cache": dagger.#FS
+                            "/groups/project": dagger.#FS
                     always: true
                 }
     }

@@ -166,7 +166,6 @@ dagger.#Plan & {
                         build_godot_windows.output
                     script: contents: #"""
                         rm -rf /groups/project/build
-                        mkdir -p /groups/build/bins
                         cp -r /groups/godot/bin /groups/build/
                         cd /groups/godot
                         cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe

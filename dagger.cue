@@ -127,9 +127,6 @@ build_linuxbsd:
         input: fetch_godot.output
         workdir: "/groups/godot"
         script: contents: #"""
-        pwd
-        whoami
-        ls -al
         scons werror=no platform=linuxbsd target=release_debug -j4 use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
         """#
     },
@@ -139,9 +136,6 @@ build_windows:
         input: fetch_godot.output
         workdir: "/groups/godot"
         script: contents: #"""
-        pwd
-        whoami
-        ls -al
         PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug -j4 use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
         """#
     },

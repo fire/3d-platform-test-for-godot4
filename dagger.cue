@@ -177,7 +177,7 @@ dagger.#Plan & {
                         eval `sed -e "s/ = /=/" /groups/godot/version.py` && declare "_tmp$patch=.$patch" "_tmp0=" "_tmp=_tmp$patch" && echo $major.$minor${!_tmp} > /groups/version.txt
                         VERSION=`cat /groups/version.txt` BASE_DIR=/groups/.local/share/godot/export_templates/ TEMPLATEDIR=$BASE_DIR/$VERSION/ && mkdir -p "$TEMPLATEDIR" && cp /groups/godot/bin/windows_release_x86_64.exe "$TEMPLATEDIR"/windows_release_x86_64 && cp /groups/godot/bin/linux_release.x86_64 "$TEMPLATEDIR"/linux_release.x86_64 && cp /groups/version.txt $BASE_DIR
                         # VERSION=`cat /groups/version.txt` TEMPLATEDIR=/groups/.local/share/godot/export_templates/$VERSION/ && mkdir /groups/pdbs && mv "$TEMPLATEDIR"/templates/*.pdb /groups/pdbs/
-                        cp -r /groups/project /groups/build
+                        cp -r /groups/project /groups/build/
                         cp -r /groups/.local/share/godot/export_templates/ /groups/build/export_templates/
                         cd /groups/build
                         # mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir `pwd`/export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Windows Desktop" `pwd`/export_windows/v_sekai_windows.exe --path /groups/project || [ -f `pwd`/export_windows/v_sekai_windows.exe\ ]

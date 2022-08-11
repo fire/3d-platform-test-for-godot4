@@ -149,7 +149,6 @@ dagger.#Plan & {
                 bash.#Run & {
                     mounts: "Local FS": {
                         contents: client.filesystem.".".read.contents
-                        // Where to mount the FS, in your container image
                         dest: "/groups/project"
                     }
                     input: 

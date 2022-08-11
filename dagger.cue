@@ -46,7 +46,7 @@ dagger.#Plan & {
                     bash.#Run & {
                         workdir: "/go/godot"
                         script: contents: #"""
-                        yum group install -y "Development Tools" && yum group install -y "Additional Development"
+                        yum group install -y "Development Tools"
                         """#
                     },
                     bash.#Run & {

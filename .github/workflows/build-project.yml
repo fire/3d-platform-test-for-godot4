@@ -2,7 +2,7 @@ name: "Dagger Export"
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dagger ]
 
 jobs:
   build:

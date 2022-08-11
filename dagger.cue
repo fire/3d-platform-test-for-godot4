@@ -94,7 +94,7 @@ fetch_godot: {
             bash.#Run & {
                 workdir: "/groups/godot"
                 script: contents: #"""
-                mkdir /opt/llvm-mingw && curl -L https://github.com/mstorsjo/llvm-mingw/releases/download/20201020/llvm-mingw-20201020-ucrt-ubuntu-18.04.tar.xz | tar -Jxf - --strip 1 -C /opt/llvm-mingw
+                mkdir /opt/llvm-mingw && curl -L https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-ucrt-ubuntu-18.04-x86_64.tar.xz | tar -Jxf - --strip 1 -C /opt/llvm-mingw
                 """#
             },
             bash.#Run & {

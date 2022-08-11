@@ -36,15 +36,15 @@ jobs:
     runs-on: ubuntu-latest
     # Set cache export environment
     env:
-      DAGGER_CACHE_FROM: type=gha,scope=${{github.job}}-${{github.ref}}-${{github.sha}},dest=.dagger_cache
-      DAGGER_CACHE_TO: type=gha,mode=max,scope=${{github.job}}-${{github.ref}}-${{github.sha}},dest=.dagger_cache
+      DAGGER_CACHE_FROM: type=gha,scope=${{github.job}}-${{github.ref}}-${{github.sha}},dest=.scons_cache
+      DAGGER_CACHE_TO: type=gha,mode=max,scope=${{github.job}}-${{github.ref}}-${{github.sha}},dest=.scons_cache
     steps:
       # Upload cache on completion and check it out now
       - name: Load dagger cache directory
         id: linux-editor-cache
         uses: actions/cache@v2
         with:
-          path: ${{github.workspace}}/.dagger_cache/
+          path: ${{github.workspace}}/.scons_cache/
           key: ${{github.job}}-${{github.ref}}-${{github.sha}}
           restore-keys: |
             ${{github.job}}-${{github.ref}}-${{github.sha}}

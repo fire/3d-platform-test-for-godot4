@@ -166,6 +166,7 @@ dagger.#Plan & {
                         build_godot_windows.output
                     script: contents: #"""
                         rm -rf /groups/project/build
+                        mkdir -p /groups/build/
                         cd /groups/godot
                         cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe
                         cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_cicd.x86_64
@@ -175,7 +176,7 @@ dagger.#Plan & {
                         mkdir -p /groups/.local/share/godot/export_templates/
                         cd /groups/.local/share/godot/export_templates/
                         eval `sed -e "s/ = /=/" /groups/godot/version.py` && declare "_tmp$patch=.$patch" "_tmp0=" "_tmp=_tmp$patch" && echo $major.$minor${!_tmp} > /groups/version.txt
-                        VERSION=`cat /groups/version.txt` BASE_DIR=/groups/.local/share/godot/export_templates/ TEMPLATEDIR=$BASE_DIR/$VERSION/ && mkdir -p "$TEMPLATEDIR" && cp /groups/godot/bin/windows_release_x86_64.exe "$TEMPLATEDIR"/windows_release_x86_64 && cp /groups/godot/bin/linux_release.x86_64 "$TEMPLATEDIR"/linux_release.x86_64 && cp /groups/version.txt cp /groups/build/version.txt $BASE_DIR
+                        VERSION=`cat /groups/version.txt` BASE_DIR=/groups/.local/share/godot/export_templates/ TEMPLATEDIR=$BASE_DIR/$VERSION/ && mkdir -p "$TEMPLATEDIR" && cp /groups/godot/bin/windows_release_x86_64.exe "$TEMPLATEDIR"/windows_release_x86_64 && cp /groups/godot/bin/linux_release.x86_64 "$TEMPLATEDIR"/linux_release.x86_64 && cp /groups/version.txt $BASE_DIR && cp /groups/version.txt /groups/build/
                         # VERSION=`cat /groups/version.txt` TEMPLATEDIR=/groups/.local/share/godot/export_templates/$VERSION/ && mkdir /groups/pdbs && mv "$TEMPLATEDIR"/templates/*.pdb /groups/pdbs/
                         cp -r /groups/project /groups/build/
                         cd /groups/build

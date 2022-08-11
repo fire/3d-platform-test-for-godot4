@@ -59,3 +59,10 @@ jobs:
         with:
           cmds: |
              do build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: "Godot Build"
+          path: build
+          retention-days: 14

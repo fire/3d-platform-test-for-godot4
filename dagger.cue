@@ -150,12 +150,13 @@ dagger.#Plan & {
             contents: dagger.#FS
         }
         filesystem: {
-            "build": write: contents: actions.build.export.directories."/groups/project"
+            "build": write: contents: actions.build.export.directories."/groups/build"
         }
     }
 	actions: {
         build:
             bash.#Run & {
+                    user: "root"
                     mounts: 
                         "Local FS": {
                             contents: client.filesystem.".".read.contents
@@ -164,6 +165,9 @@ dagger.#Plan & {
                     input: 
                         build_godot_windows.output
                     script: contents: #"""
+                        rm -rf /groups/project/build
+                        mkdir -p /groups/build/bins
+                        cp -r /groups/godot/bin /groups/build/
                         cd /groups/godot
                         cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe
                         cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
@@ -173,13 +177,15 @@ dagger.#Plan & {
                         eval `sed -e "s/ = /=/" /groups/godot/version.py` && declare "_tmp$patch=.$patch" "_tmp0=" "_tmp=_tmp$patch" && echo $major.$minor${!_tmp} > /groups/version.txt
                         VERSION=`cat /groups/version.txt` BASE_DIR=/groups/.local/share/godot/export_templates/ TEMPLATEDIR=$BASE_DIR/$VERSION/ && mkdir -p "$TEMPLATEDIR" && cp /groups/godot/bin/windows_release_x86_64.exe "$TEMPLATEDIR"/windows_release_x86_64 && cp /groups/godot/bin/linux_release.x86_64 "$TEMPLATEDIR"/linux_release.x86_64 && cp /groups/version.txt $BASE_DIR
                         # VERSION=`cat /groups/version.txt` TEMPLATEDIR=/groups/.local/share/godot/export_templates/$VERSION/ && mkdir /groups/pdbs && mv "$TEMPLATEDIR"/templates/*.pdb /groups/pdbs/
-                        cd /groups/project
+                        cp -r /groups/project /groups/build
+                        cp -r /groups/.local/share/godot/export_templates/ /groups/build/export_templates/
+                        cd /groups/build
                         # mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir `pwd`/export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Windows Desktop" `pwd`/export_windows/v_sekai_windows.exe --path /groups/project || [ -f `pwd`/export_windows/v_sekai_windows.exe\ ]
                         # mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_linuxbsd && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Linux/X11" `pwd`/export_linuxbsd/v_sekai_linuxbsd --path /groups/project || [ -f `pwd`/export_linuxbsd/v_sekai_linuxbsd ]
                         """#     
                     export: 
                         directories: 
-                            "/groups/project": dagger.#FS
+                            "/groups/build": dagger.#FS
                     always: true
                 }
     }

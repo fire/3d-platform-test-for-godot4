@@ -144,10 +144,18 @@ build_godot_windows:
         PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug -j4 use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
         """#
     }
-client: filesystem: ".": read: {
-    contents: dagger.#FS
-}
 dagger.#Plan & {
+    client: {
+        filesystem: ".": read: {
+            contents: dagger.#FS
+        }
+        filesystem: {
+            "build": write: contents: actions.build.export.directories."/groups/"
+        }
+        filesystem: {
+            ".scons_cache": write: contents: actions.build.export.directories."/groups/godot/.scons_cache"
+        }
+    }
 	actions: {
         build:
             bash.#Run & {
@@ -171,7 +179,14 @@ dagger.#Plan & {
                         cd /groups/project
                         # mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir `pwd`/export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Windows Desktop" `pwd`/export_windows/v_sekai_windows.exe --path /groups/project || [ -f `pwd`/export_windows/v_sekai_windows.exe\ ]
                         # mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_linuxbsd && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Linux/X11" `pwd`/export_linuxbsd/v_sekai_linuxbsd --path /groups/project || [ -f `pwd`/export_linuxbsd/v_sekai_linuxbsd ]
-                        """#
+                        """#     
+                    export: 
+                        directories: 
+                            "/groups/": dagger.#FS
+                    export: 
+                        directories: 
+                            "/groups/godot/.scons_cache": dagger.#FS
+                    always: true
                 }
     }
 }

@@ -165,14 +165,10 @@ dagger.#Plan & {
                         rm -rf /groups/.local/share/godot/export_templates/
                         mkdir -p /groups/.local/share/godot/export_templates/
                         cd /groups/.local/share/godot/export_templates/
-                        cp /groups/godot/bin/windows_release_x86_64.exe /groups/.local/share/godot/export_templates/windows_release_x86_64
-                        cp /groups/godot/bin/linux_release.x86_64 /groups/.local/share/godot/export_templates/
-                        # mkdir pdbs && mv templates/*.pdb pdbs 
-                        # export VERSION=`cat templates/version.txt`
-                        # export TEMPLATEDIR=\".local/share/godot/export_templates/$VERSION/\"&& export HOME=/groups/ && export BASEDIR=/groups/ && rm -rf \"$TEMPLATEDIR\" && mkdir -p \"$TEMPLATEDIR\" && cd \"$TEMPLATEDIR\" && mv \"$BASEDIR\"/templates/* .
-                        # cd /groups/project
-                        # rm -rf export_windows && mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export \"Windows Desktop\" \"`pwd`/export_windows/v_sekai_windows.exe\" --path /groups/project || [ -f \"`pwd`/export_windows/v_sekai_windows.exe\" ]
-                        # rm -rf export_linuxbsd && mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_linuxbsd && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export \"Linux/X11\" \"`pwd`/export_linuxbsd/v_sekai_linuxbsd\" --path /groups/project || [ -f \"`pwd`/export_linuxbsd/v_sekai_linuxbsd\" ]
+                        eval `sed -e "s/ = /=/" /groups/godot/version.py` && declare "_tmp$patch=.$patch" "_tmp0=" "_tmp=_tmp$patch" && echo $major.$minor${!_tmp} > "$TEMPLATEDIR"/version.txt && VERSION=`cat /groups/.local/share/godot/export_templates/version.txt`TEMPLATEDIR=/groups/.local/share/godot/export_templates/$VERSION/ && cp /groups/godot/bin/windows_release_x86_64.exe "$TEMPLATEDIR"/windows_release_x86_64 && cp /groups/godot/bin/linux_release.x86_64 "$TEMPLATEDIR"/linux_release.x86_64 && mkdir /groups/pdbs && mv "$TEMPLATEDIR"/templates/*.pdb /groups/pdbs/
+                        cd /groups/project
+                        rm -rf export_windows && mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export \"Windows Desktop\" \"`pwd`/export_windows/v_sekai_windows.exe\" --path /groups/project || [ -f \"`pwd`/export_windows/v_sekai_windows.exe\" ]
+                        #rm -rf export_linuxbsd && mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_linuxbsd && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export \"Linux/X11\" \"`pwd`/export_linuxbsd/v_sekai_linuxbsd\" --path /groups/project || [ -f \"`pwd`/export_linuxbsd/v_sekai_linuxbsd\" ]
                         """#
                 }
     }

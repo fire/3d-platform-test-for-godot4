@@ -165,12 +165,12 @@ dagger.#Plan & {
                     input: 
                         build_godot_windows.output
                     script: contents: #"""
-                        rm -rf /groups/build
+                        rm -rf /groups/project/build
                         cd /groups/godot
                         cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe
                         cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_cicd.x86_64
                         cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
-                        cp -r /groups/godot/bin /groups/build/bin
+                        cp -r /groups/godot/bin /groups/build/
                         rm -rf /groups/.local/share/godot/export_templates/
                         mkdir -p /groups/.local/share/godot/export_templates/
                         cd /groups/.local/share/godot/export_templates/

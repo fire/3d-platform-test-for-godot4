@@ -92,6 +92,12 @@ fetch_godot: {
                 """#
             },
             bash.#Run & {
+                workdir: "/groups/godot"
+                script: contents: #"""
+                mkdir /opt/llvm-mingw && curl -L https://github.com/mstorsjo/llvm-mingw/releases/download/20201020/llvm-mingw-20201020-ucrt-ubuntu-18.04.tar.xz | tar -Jxf - --strip 1 -C /opt/llvm-mingw
+                """#
+            },
+            bash.#Run & {
                 workdir: "/"
                 script: contents: #"""
                 adduser groups
@@ -138,13 +144,6 @@ build_godot_windows:
         PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug -j4 use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
         """#
     }
-build_godot_combined:
-    bash.#Run & {
-        input: build_godot_windows.output
-        workdir: "/groups/godot"
-        script: contents: #"""
-        """#
-    }
 client: filesystem: ".": read: {
     contents: dagger.#FS
 }
@@ -158,7 +157,7 @@ dagger.#Plan & {
                             dest: "/groups/project"
                         }
                     input: 
-                        build_godot_combined.output
+                        build_godot_windows.output
                     script: contents: #"""
                         cd /groups/godot
                         cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe

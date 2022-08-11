@@ -1,4 +1,4 @@
-[gd_resource type="Shader" format=2]
+[gd_resource type="Shader" format=3 uid="uid://bc6n2o42skgvm"]
 
 [resource]
 code = "/**
@@ -15,20 +15,20 @@ uniform float grid_smoothness: hint_range(0.001, 1.0) = 1.0;
 uniform bool grid_x = true;
 uniform bool grid_y = true;
 uniform bool grid_z = true;
-uniform vec4 grid_x_color: hint_color = vec4(1.0, 0.0, 0.0, 1.0);
-uniform vec4 grid_y_color: hint_color = vec4(0.0, 1.0, 0.0, 1.0);
-uniform vec4 grid_z_color: hint_color = vec4(0.0, 0.0, 1.0, 1.0);
-uniform vec4 base_color: hint_color = vec4(1.0);
+uniform vec4 grid_x_color: source_color = vec4(1.0, 0.0, 0.0, 1.0);
+uniform vec4 grid_y_color: source_color = vec4(0.0, 1.0, 0.0, 1.0);
+uniform vec4 grid_z_color: source_color = vec4(0.0, 0.0, 1.0, 1.0);
+uniform vec4 base_color: source_color = vec4(1.0);
 uniform float disabled_angle: hint_range(0.0, 45.0) = 5;
 
 varying vec3 world_position;
 
 void vertex() {
-    world_position = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
+    world_position = (PROJECTION_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
 void fragment() {
-	mat3 inv_cam = mat3(INV_CAMERA_MATRIX[0].xyz, INV_CAMERA_MATRIX[1].xyz, INV_CAMERA_MATRIX[2].xyz);
+	mat3 inv_cam = mat3(PROJECTION_MATRIX[0].xyz, PROJECTION_MATRIX[1].xyz, PROJECTION_MATRIX[2].xyz);
     vec3 m = vec3(mod(world_position.x, grid_step), mod(world_position.y, grid_step), mod(world_position.z, grid_step));
     vec3 dist = vec3(min(m.x, abs(grid_step - m.x)), min(m.y, abs(grid_step - m.y)), min(m.z, abs(grid_step - m.z)));
     float gw = grid_width * 0.5;

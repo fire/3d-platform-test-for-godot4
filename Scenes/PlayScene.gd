@@ -1,11 +1,11 @@
 extends Node3D
 
 func _ready():
-	$Texts/VBox/GDScriptButton.pressed = !Global.USE_NATIVE_METHOD
-	$Texts/VBox/ConstantSpeedButton.pressed = Global.FLOOR_CONSTANT_SPEED
-	$Texts/VBox/OnFloorButton.pressed = Global.FLOOR_BLOCK_ON_WALL
-	$Texts/VBox/AirFrictionButton.pressed = Global.APPLY_AIR_FRICTION
-	$Texts/VBox/AccelerationButton.pressed = Global.APPLY_ACCELERATION
+	$Texts/VBox/GDScriptButton.button_pressed = !Global.USE_NATIVE_METHOD
+	$Texts/VBox/ConstantSpeedButton.button_pressed = Global.FLOOR_CONSTANT_SPEED
+	$Texts/VBox/OnFloorButton.button_pressed = Global.FLOOR_BLOCK_ON_WALL
+	$Texts/VBox/AirFrictionButton.button_pressed = Global.APPLY_AIR_FRICTION
+	$Texts/VBox/AccelerationButton.button_pressed = Global.APPLY_ACCELERATION
 	$Texts/VBox/FloorSnap/FloorSnapSlider.value = Global.SNAP_LENGTH
 	$Texts/VBox/MaxFloorAngle/MaxFloorAngleSlider.value = rad2deg(Global.FLOOR_MAX_ANGLE)
 	$Texts/VBox/WallMinAngle/WallMinAngleSlideSlider.value = rad2deg(Global.WALL_MIN_SLIDE_ANGLE)

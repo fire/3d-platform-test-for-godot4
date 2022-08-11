@@ -55,19 +55,19 @@ func _physics_process(delta):
 	var speed = Global.RUN_SPEED if Input.is_action_pressed("run") else Global.WALK_SPEED
 	if (util_on_floor() and not Global.APPLY_ACCELERATION) or (not util_on_floor() and not Global.APPLY_ACCELERATION):
 		if(util_on_floor() or Global.APPLY_AIR_FRICTION):
-			motion_velocity.x = direction.x * speed
-			motion_velocity.z = direction.z * speed
+			velocity.x = direction.x * speed
+			velocity.z = direction.z * speed
 	else:
 		if(util_on_floor() or Global.APPLY_AIR_FRICTION):
-			motion_velocity.x = lerp(motion_velocity.x, direction.x * speed, accel * delta)
-			motion_velocity.z = lerp(motion_velocity.z, direction.z * speed, accel * delta)
+			velocity.x = lerp(velocity.x, direction.x * speed, accel * delta)
+			velocity.z = lerp(velocity.z, direction.z * speed, accel * delta)
 	
 	if not util_on_floor():
-		motion_velocity.y = motion_velocity.y - Global.GRAVITY
+		velocity.y = velocity.y - Global.GRAVITY
 	
 	if Input.is_action_just_pressed("jump"):
 		if Global.INFINITE_JUMP or util_on_floor():
-			motion_velocity.y = Global.JUMP_FORCE
+			velocity.y = Global.JUMP_FORCE
 			floor_snap_length = 0
 	
 	#if Global.USE_NATIVE_METHOD:
@@ -128,8 +128,8 @@ func custom_move_and_collide(p_motion: Vector3, p_test_only: bool = false, p_can
 
 			# Check depth of recovery.
 			var projected_length := result.get_travel().dot(motion_normal)
-			var recovery := result.get_travel() - motion_normal * projected_length
-			var recovery_length := recovery.length()
+			var recovery = result.get_travel() - motion_normal * projected_length
+			var recovery_length = recovery.length()
 			# Fixes cases where canceling slide causes the motion to go too deep into the ground,
 			# Becauses we're only taking rest information into account and not general recovery.
 			if recovery_length < margin + precision:
@@ -182,7 +182,7 @@ func custom_move_and_slide():
 		if not excluded:
 			var bs := PhysicsServer3D.body_get_direct_state(platform_rid)
 			if bs:
-				current_platform_velocity = bs.motion_velocity
+				current_platform_velocity = bs.velocity
 		else:
 			current_platform_velocity = Vector3.ZERO
 
@@ -203,10 +203,10 @@ func custom_move_and_slide():
 		_move_and_slide_free()
 	
 	if not on_floor and not on_wall:
-		motion_velocity = motion_velocity + current_platform_velocity # Add last floor velocity when just left a moving platform
+		velocity = velocity + current_platform_velocity # Add last floor velocity when just left a moving platform
 
 func _move_and_slide_free():
-	var motion = motion_velocity * get_physics_process_delta_time()
+	var motion = velocity * get_physics_process_delta_time()
 		
 	platform_rid = RID()
 	floor_normal = Vector3.ZERO
@@ -217,8 +217,8 @@ func _move_and_slide_free():
 		var collision = custom_move_and_collide(motion, false, false)
 		if collision:
 			_set_collision_direction(collision)
-			debug_top_down_angle = collision.get_angle(-motion_velocity.normalized())
-			if wall_min_slide_angle != 0 && collision.get_angle(-motion_velocity.normalized()) < wall_min_slide_angle + FLOOR_ANGLE_THRESHOLD:
+			debug_top_down_angle = collision.get_angle(-velocity.normalized())
+			if wall_min_slide_angle != 0 && collision.get_angle(-velocity.normalized()) < wall_min_slide_angle + FLOOR_ANGLE_THRESHOLD:
 				motion = Vector3.ZERO
 			elif first_slide:
 				var slide: Vector3 = collision.remainder.slide(collision.normal).normalized()
@@ -226,7 +226,7 @@ func _move_and_slide_free():
 			else:
 				motion = collision.remainder.slide(collision.normal)
 			
-			if motion.dot(motion_velocity) <= 0.0:
+			if motion.dot(velocity) <= 0.0:
 					motion = Vector3.ZERO
 
 		else:
@@ -237,7 +237,7 @@ func _move_and_slide_free():
 	
 func _move_and_slide_grounded(current_platform_velocity):
 	
-	var motion = motion_velocity * get_physics_process_delta_time()
+	var motion = velocity * get_physics_process_delta_time()
 	var motion_slided_up = motion.slide(up_direction)
 	
 	var prev_floor_normal = floor_normal
@@ -248,7 +248,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 	floor_normal = Vector3.ZERO
 	platform_velocity = Vector3.ZERO
 	
-	var vel_dir_facing_up := motion_velocity.dot(up_direction) > 0
+	var vel_dir_facing_up := velocity.dot(up_direction) > 0
 	# No sliding on first attempt to keep floor motion stable when possible.
 	var sliding_enabled := not floor_stop_on_slope or up_direction == Vector3.ZERO
 	var can_apply_constant_speed := sliding_enabled
@@ -263,14 +263,14 @@ func _move_and_slide_grounded(current_platform_velocity):
 		if collision:
 			_set_collision_direction(collision)
 			
-			if on_floor and floor_stop_on_slope and (motion_velocity.normalized() + up_direction).length() < 0.1:
+			if on_floor and floor_stop_on_slope and (velocity.normalized() + up_direction).length() < 0.1:
 				#if collision.travel.length() > get_safe_margin():
 				#	position = position - collision.travel.slide(up_direction)
 				#else:
 				#	position = position - collision.travel
 				if collision.travel.length() < get_safe_margin():
 					position = position - collision.travel
-				motion_velocity = Vector3.ZERO
+				velocity = Vector3.ZERO
 				motion = Vector3.ZERO
 				break
 			if collision.remainder.is_equal_approx(Vector3.ZERO):
@@ -288,8 +288,8 @@ func _move_and_slide_grounded(current_platform_velocity):
 					
 					# Needs horizontal motion from current motion instead of motion_slide_up
 					# to properly test the angle and avoid standing on slopes
-					var horizontal_motion := motion.slide(up_direction)
-					var horizontal_normal := collision.normal.slide(up_direction).normalized()
+					var horizontal_motion = motion.slide(up_direction)
+					var horizontal_normal = collision.normal.slide(up_direction).normalized()
 					var motion_angle = abs(acos(-horizontal_normal.dot(horizontal_motion.normalized())))
 					#print(str(rad2deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
 					
@@ -314,10 +314,10 @@ func _move_and_slide_grounded(current_platform_velocity):
 								platform_velocity = current_platform_velocity
 								floor_normal = prev_floor_normal
 
-						var forward := collision.normal.slide(up_direction).normalized()
+						var forward = collision.normal.slide(up_direction).normalized()
 						motion = motion.slide(forward)
-						if motion_velocity.dot(forward) < 0:
-							motion_velocity = motion_velocity.slide(forward.abs())
+						if velocity.dot(forward) < 0:
+							velocity = velocity.slide(forward.abs())
 						# Avoid being stopped during a fall
 						if motion.dot(collision.normal) >= 0:
 							apply_default_sliding = false
@@ -328,7 +328,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 					var motion_angle = abs(acos(-horizontal_normal.dot(motion_slided_up.normalized())))	
 					if motion_angle < wall_min_slide_angle:
 						motion = up_direction * motion.dot(up_direction)
-						motion_velocity = up_direction * motion_velocity.dot(up_direction)
+						velocity = up_direction * velocity.dot(up_direction)
 						apply_default_sliding = false
 					
 				
@@ -342,20 +342,20 @@ func _move_and_slide_grounded(current_platform_velocity):
 			
 			if apply_default_sliding: 
 				if (sliding_enabled or not on_floor) and (not on_ceiling or slide_on_ceiling or not vel_dir_facing_up):
-					var slide_motion := collision.remainder.slide(collision.normal)
-					if slide_motion.dot(motion_velocity) > 0.0:
+					var slide_motion = collision.remainder.slide(collision.normal)
+					if slide_motion.dot(velocity) > 0.0:
 						motion = slide_motion
 					else:
 						motion = Vector3.ZERO
 					if slide_on_ceiling and on_ceiling:
 						if vel_dir_facing_up:
-							motion_velocity = motion_velocity.slide(collision.normal)
+							velocity = velocity.slide(collision.normal)
 						else: # remove x when fall to avoid acceleration
-							motion_velocity = up_direction * up_direction.dot(motion_velocity)
+							velocity = up_direction * up_direction.dot(velocity)
 				else:
 					motion = collision.remainder
 					if on_ceiling and not slide_on_ceiling and vel_dir_facing_up:
-						motion_velocity = motion_velocity.slide(up_direction)
+						velocity = velocity.slide(up_direction)
 						motion = motion.slide(up_direction)
 				last_travel = collision.travel
 		elif floor_constant_speed and first_slide and _on_floor_if_snapped():
@@ -378,7 +378,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 
 	floor_snap()
 	if on_floor and not vel_dir_facing_up:
-		motion_velocity = motion_velocity.slide(up_direction)
+		velocity = velocity.slide(up_direction)
 
 func _set_collision_direction(collision):
 	debug_last_collision = collision
@@ -402,7 +402,7 @@ func _set_collision_direction(collision):
 		on_wall = true
 
 func _on_floor_if_snapped():
-	if up_direction == Vector3.ZERO or is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor or motion_velocity.dot(up_direction) > 0: return false
+	if up_direction == Vector3.ZERO or is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor or velocity.dot(up_direction) > 0: return false
 	var collision := custom_move_and_collide(up_direction * -floor_snap_length, true)
 	if collision:
 		if acos(collision.normal.dot(up_direction)) <= floor_max_angle + FLOOR_ANGLE_THRESHOLD:
@@ -411,7 +411,7 @@ func _on_floor_if_snapped():
 	return false
 
 func floor_snap():
-	if up_direction == Vector3.ZERO or is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor or motion_velocity.dot(up_direction) > 0: return
+	if up_direction == Vector3.ZERO or is_equal_approx(floor_snap_length, 0) or on_floor or not was_on_floor or velocity.dot(up_direction) > 0: return
 
 	var collision := custom_move_and_collide(up_direction * -floor_snap_length, true)
 	if collision:

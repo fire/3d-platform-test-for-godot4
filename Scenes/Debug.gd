@@ -14,7 +14,7 @@ func _process(_delta):
 	var speed_length = (_player.prev_position - _player.position + floor_v * get_physics_process_delta_time()).length()
 	_debug_dict["Speed"] = snapped(speed_length * 100 , 0.001)
 	
-	_debug_dict["Velocity"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [_player.motion_velocity.x, _player.motion_velocity.y, _player.motion_velocity.z, _player.motion_velocity.length()]
+	_debug_dict["Velocity"] = "(%.2f, %.2f, %.2f) - Length %.3f" % [_player.velocity.x, _player.velocity.y, _player.velocity.z, _player.velocity.length()]
 	var last_motion = _player.util_last_motion()
 	var real_movement = _player.get_real_velocity()
 	if last_motion:
@@ -48,7 +48,7 @@ func _process(_delta):
 			if _player.motion_mode == 0:
 				_angle = "%.2f°" % rad2deg(last_col.get_angle(i))
 			else:
-				_angle = "%.2f°" % rad2deg(acos(last_col.normal.dot(-_player.motion_velocity.normalized())))
+				_angle = "%.2f°" % rad2deg(acos(last_col.normal.dot(-_player.velocity.normalized())))
 			var _type = _player._debug_col_type(i, Global.CURRENT_DEBUG_SLIDE)
 			_debug_dict["Col %d normal" % i  ] = str(_norm) + " - angle: " + str(_angle) + " - type : " + str(_type)
 	text = ""

@@ -48,5 +48,7 @@ func _physics_process(_delta):
 			step_once = true
 
 func _update_label(display:bool):
-	owner.find_node("Pause").visible = display
-	owner.find_node("PauseCommand").visible = display
+	var node : Node = owner
+	if owner != null and owner is Node2D:
+		node.get_node("Pause").visible = display
+		node.get_node("PauseCommand").visible = display

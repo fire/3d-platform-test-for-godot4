@@ -130,7 +130,7 @@ build_linuxbsd:
         pwd
         whoami
         ls -al
-        scons target=release_debug custom_modules=../godot_groups_modules platform=linuxbsd
+        scons werror=no platform=linuxbsd target=release_debug -j4 use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
         """#
     },
 
@@ -142,30 +142,43 @@ build_windows:
         pwd
         whoami
         ls -al
-        scons target=release_debug custom_modules=../godot_groups_modules platform=windows
+        PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug -j4 use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
         """#
     },
-
+client: filesystem: ".": read: {
+    contents: dagger.#FS
+}
 dagger.#Plan & {
-    client: filesystem: ".": read: {
-        contents: dagger.#FS
-    }
 	actions: {
         build:
             build_linux: 
                 bash.#Run & {
+                    mounts: "Local FS": {
+                        contents: client.filesystem.".".read.contents
+                        // Where to mount the FS, in your container image
+                        dest: "/groups/project"
+                    }
                     input: 
                         build_linuxbsd.output
                     script: contents: #"""
-                        ls
+                        ls /groups/project
+                        cd /groups/godot
+                        cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
                         """#
                 }
             build_windows: 
                 bash.#Run & {
+                    mounts: "Local FS": {
+                        contents: client.filesystem.".".read.contents
+                        // Where to mount the FS, in your container image
+                        dest: "/groups/project"
+                    }
                     input: 
                         build_windows.output
                     script: contents: #"""
-                        ls
+                        ls /groups/project
+                        cd /groups/godot
+                        cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe
                         """#
                 }
     }

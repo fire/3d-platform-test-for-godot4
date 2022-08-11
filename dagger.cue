@@ -161,7 +161,6 @@ dagger.#Plan & {
                     input: 
                         build_linuxbsd.output
                     script: contents: #"""
-                        ls /groups/project
                         cd /groups/godot
                         cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
                         """#
@@ -176,7 +175,6 @@ dagger.#Plan & {
                     input: 
                         build_windows.output
                     script: contents: #"""
-                        ls /groups/project
                         cd /groups/godot
                         cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe
                         """#

@@ -34,7 +34,7 @@ dagger.#Plan & {
                     bash.#Run & {
                         workdir: "/go/godot"
                         script: contents: #"""
-                        yum install epel-release dnf-plugins-core unzip -y
+                        yum install unzip -y
                         """#
                     },
                     bash.#Run & {

@@ -129,12 +129,6 @@ dagger.#Plan & {
                     bash.#Run & {
                         workdir: "/groups/godot"
                         script: contents: #"""
-                        git config --global url.git@gitlab.com:.insteadOf https://gitlab.com/
-                        """#
-                    },
-                    bash.#Run & {
-                        workdir: "/groups/godot"
-                        script: contents: #"""
                         pwd
                         whoami
                         ls -al

@@ -109,6 +109,10 @@ dagger.#Plan & {
                         contents: godot.output
                         dest:     "/groups/godot"
                     },
+                    docker.#Copy & {
+                        contents: client.output
+                        dest:     "/groups/project"
+                    },
                     bash.#Run & {
                         workdir: "/"
                         script: contents: #"""

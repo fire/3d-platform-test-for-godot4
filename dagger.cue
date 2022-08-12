@@ -150,7 +150,7 @@ dagger.#Plan & {
 			contents: dagger.#FS
 		}
 		filesystem: {
-			"build": write: contents: actions.build.export.directories."/groups/build/bin"
+			"build": write: contents: actions.build.export.directories."/groups/build/project"
 		}
 	}
 	actions: {
@@ -185,7 +185,7 @@ dagger.#Plan & {
 					"""#
 				export:
 					directories:
-						"/groups/build/bin": dagger.#FS
+						"/groups/build/project": dagger.#FS
 				always: true
 			}
 	}

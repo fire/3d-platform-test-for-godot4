@@ -5,7 +5,7 @@ var width = 2
 var lenght = 1
 
 func _process(_delta):
-	update()
+	update_minimum_size()
 
 func _draw():
 	if Global.DRAW_DEBUG_LINE: 

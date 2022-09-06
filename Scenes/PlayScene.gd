@@ -7,8 +7,8 @@ func _ready():
 	$Texts/VBox/AirFrictionButton.button_pressed = Global.APPLY_AIR_FRICTION
 	$Texts/VBox/AccelerationButton.button_pressed = Global.APPLY_ACCELERATION
 	$Texts/VBox/FloorSnap/FloorSnapSlider.value = Global.SNAP_LENGTH
-	$Texts/VBox/MaxFloorAngle/MaxFloorAngleSlider.value = rad2deg(Global.FLOOR_MAX_ANGLE)
-	$Texts/VBox/WallMinAngle/WallMinAngleSlideSlider.value = rad2deg(Global.WALL_MIN_SLIDE_ANGLE)
+	$Texts/VBox/MaxFloorAngle/MaxFloorAngleSlider.value = rad_to_deg(Global.FLOOR_MAX_ANGLE)
+	$Texts/VBox/WallMinAngle/WallMinAngleSlideSlider.value = rad_to_deg(Global.WALL_MIN_SLIDE_ANGLE)
 
 func _on_AirFrictionButton_toggled(button_pressed):
 	Global.APPLY_AIR_FRICTION = button_pressed
@@ -30,11 +30,11 @@ func _on_AccelerationButton_toggled(button_pressed):
 
 func _on_MaxFloorAngleSlider_value_changed(value):
 	$Texts/VBox/MaxFloorAngle/MaxFloorAngleLabel.text = "Floor max angle: %.0f°" % round(value) 
-	Global.FLOOR_MAX_ANGLE = deg2rad(value)
+	Global.FLOOR_MAX_ANGLE = deg_to_rad(value)
 
 func _on_WallMinAngleSlideSlider_value_changed(value):
 	$Texts/VBox/WallMinAngle/WallMinAngleSlideLabel.text = "Min slide angle: %.0f°" % round(value)
-	Global.WALL_MIN_SLIDE_ANGLE = deg2rad(value)
+	Global.WALL_MIN_SLIDE_ANGLE = deg_to_rad(value)
 
 func _on_FloorSnapSlider_value_changed(value):
 	$Texts/VBox/FloorSnap/FloorSnapLabel.text = "Floor snap: %.1f" % value

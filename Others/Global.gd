@@ -24,10 +24,10 @@ var SNAP_LENGTH := 0.0
 var FLOOR_CONSTANT_SPEED := true
 var FLOOR_STOP_ON_SLOPE := true
 var FLOOR_BLOCK_ON_WALL := true
-var FLOOR_MAX_ANGLE := deg2rad(45.0)
+var FLOOR_MAX_ANGLE := deg_to_rad(45.0)
 var UP_DIRECTION := Vector3.UP
 var SLIDE_ON_CEILING := true
-var WALL_MIN_SLIDE_ANGLE := deg2rad(0)
+var WALL_MIN_SLIDE_ANGLE := deg_to_rad(0)
 
  # top down
 var MODE_FREE := false

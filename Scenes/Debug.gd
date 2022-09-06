@@ -46,9 +46,9 @@ func _process(_delta):
 			var _norm = "(%.2f, %.2f, %.2f)" % [last_col.get_normal(i).x, last_col.get_normal(i).y, last_col.get_normal(i).z]
 			var _angle = ""
 			if _player.motion_mode == 0:
-				_angle = "%.2f°" % rad2deg(last_col.get_angle(i))
+				_angle = "%.2f°" % rad_to_deg(last_col.get_angle(i))
 			else:
-				_angle = "%.2f°" % rad2deg(acos(last_col.normal.dot(-_player.velocity.normalized())))
+				_angle = "%.2f°" % rad_to_deg(acos(last_col.normal.dot(-_player.velocity.normalized())))
 			var _type = _player._debug_col_type(i, Global.CURRENT_DEBUG_SLIDE)
 			_debug_dict["Col %d normal" % i  ] = str(_norm) + " - angle: " + str(_angle) + " - type : " + str(_type)
 	text = ""

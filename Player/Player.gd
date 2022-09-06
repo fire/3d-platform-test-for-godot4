@@ -22,10 +22,10 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		rotation.y = rotation.y - (event.relative.x * mouse_sensitivity)
 		camera_pivot.rotation.x = camera_pivot.rotation.x + (event.relative.y * mouse_sensitivity )
-		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, deg2rad(-50), deg2rad(5))
+		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, deg_to_rad(-50), deg_to_rad(5))
 	
 	if Input.is_action_just_pressed("center"):
-		rotation.y = snapped(rotation.y, deg2rad(90))
+		rotation.y = snapped(rotation.y, deg_to_rad(90))
 
 func _process(_delta):
 	floor_block_on_wall = Global.FLOOR_BLOCK_ON_WALL
@@ -176,9 +176,9 @@ func custom_move_and_slide():
 	if (on_floor or on_wall) and platform_rid.get_id():
 		var excluded = false
 		if on_floor:
-			excluded = (moving_platform_floor_layers & platform_layer) == 0
+			excluded = (platform_floor_layers & platform_layer) == 0
 		elif on_wall:
-			excluded = (moving_platform_wall_layers & platform_layer) == 0
+			excluded = (platform_floor_layers & platform_layer) == 0
 		if not excluded:
 			var bs := PhysicsServer3D.body_get_direct_state(platform_rid)
 			if bs:
@@ -291,7 +291,7 @@ func _move_and_slide_grounded(current_platform_velocity):
 					var horizontal_motion = motion.slide(up_direction)
 					var horizontal_normal = collision.normal.slide(up_direction).normalized()
 					var motion_angle = abs(acos(-horizontal_normal.dot(horizontal_motion.normalized())))
-					#print(str(rad2deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
+					#print(str(rad_to_deg(motion_angle)) + " " + str(util_on_floor_only()) + " " + str(motion_angle < (0.5 * PI)))
 					
 					if was_on_floor and transform.basis.z.dot(collision.normal) > 0.5:
 						motion = motion.slide(up_direction)

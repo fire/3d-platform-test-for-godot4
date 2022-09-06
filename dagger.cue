@@ -150,7 +150,7 @@ dagger.#Plan & {
 			contents: dagger.#FS
 		}
 		filesystem: {
-			"build": write: contents: actions.build.export.directories."/groups/build/project"
+			"build": write: contents: actions.build.export.directories."/groups/build/project_export"
 		}
 	}
 	actions: {
@@ -161,7 +161,7 @@ dagger.#Plan & {
 					"Local FS": {
 						contents: client.filesystem.".".read.contents
 						dest:     "/groups/project"
-					}
+					},
 				input:
 					build_godot_windows.output
 				script: contents: #"""
@@ -180,12 +180,12 @@ dagger.#Plan & {
 					# VERSION=`cat /groups/version.txt` TEMPLATEDIR=/groups/.local/share/godot/export_templates/$VERSION/ && mkdir /groups/pdbs && mv "$TEMPLATEDIR"/templates/*.pdb /groups/pdbs/
 					cp -r /groups/project /groups/build/
 					cd /groups/build
-					# mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir `pwd`/export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Windows Desktop" `pwd`/export_windows/v_sekai_windows.exe --path /groups/project || [ -f `pwd`/export_windows/v_sekai_windows.exe\ ]
-					# mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_linuxbsd && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Linux/X11" `pwd`/export_linuxbsd/v_sekai_linuxbsd --path /groups/project || [ -f `pwd`/export_linuxbsd/v_sekai_linuxbsd ]
+					# mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir `pwd`/export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Windows Desktop" `pwd`/export_windows/v_sekai_windows.exe --path /groups/project/project_export || [ -f `pwd`/export_windows/v_sekai_windows.exe\ ]
+					# mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_linuxbsd && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Linux/X11" `pwd`/export_linuxbsd/v_sekai_linuxbsd --path /groups/project/project_export || [ -f `pwd`/export_linuxbsd/v_sekai_linuxbsd ]
 					"""#
 				export:
 					directories:
-						"/groups/build/project": dagger.#FS
+						"/groups/build/project_export": dagger.#FS
 				always: true
 			}
 	}

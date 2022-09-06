@@ -135,6 +135,9 @@ build_godot_linux:
 		script: contents: #"""
 			scons werror=no platform=linuxbsd target=release_debug use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
 			"""#
+		export:
+			directories:
+				"/groups/godot/bin": dagger.#FS
 	}
 build_godot_windows:
 	bash.#Run & {
@@ -143,6 +146,9 @@ build_godot_windows:
 		script: contents: #"""
 			PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
 			"""#
+		export:
+			directories:
+				"/groups/godot/bin": dagger.#FS
 	}
 dagger.#Plan & {
 	client: {
@@ -150,7 +156,7 @@ dagger.#Plan & {
 			contents: dagger.#FS
 		}
 		filesystem: {
-			"build": write: contents: actions.build.export.directories."/groups/build/project_export"
+			"build": write: contents: actions.build.export.directories."/groups/build"
 		}
 	}
 	actions: {
@@ -163,29 +169,38 @@ dagger.#Plan & {
 						dest:     "/groups/project"
 					},
 				input:
-					build_godot_windows.output
+					build_godot_windows.output,
 				script: contents: #"""
+					cd /groups/godot
+					cp bin/godot.windows.opt.tools.x86_64.llvm.exe bin/windows_release_x86_64.exe 
+					mingw-strip --strip-debug bin/windows_release_x86_64.exe
+					cp bin/godot.windows.opt.tools.x86_64.llvm.pdb bin/windows_release_x86_64.pdb
+					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_cicd.x86_64
+					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_release.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
+					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64 && strip --strip-debug bin/linux_debug.x86_64	
 					rm -rf /groups/project/build
 					mkdir -p /groups/build/
-					cd /groups/godot
-					cp bin/godot.windows.opt.tools.64.exe bin/windows_debug_x86_64.exe && cp bin/godot.windows.opt.tools.64.exe bin/windows_release_x86_64.exe && mingw-strip --strip-debug bin/windows_release_x86_64.exe
-					cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_cicd.x86_64
-					cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_debug.x86_64 && cp bin/godot.linuxbsd.opt.tools.64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
-					cp -r /groups/godot/bin /groups/build/
 					rm -rf /groups/.local/share/godot/export_templates/
 					mkdir -p /groups/.local/share/godot/export_templates/
 					cd /groups/.local/share/godot/export_templates/
-					eval `sed -e "s/ = /=/" /groups/godot/version.py` && declare "_tmp$patch=.$patch" "_tmp0=" "_tmp=_tmp$patch" && echo $major.$minor${!_tmp} > /groups/version.txt
-					VERSION=`cat /groups/version.txt` BASE_DIR=/groups/.local/share/godot/export_templates/ TEMPLATEDIR=$BASE_DIR/$VERSION/ && mkdir -p "$TEMPLATEDIR" && cp /groups/godot/bin/windows_release_x86_64.exe "$TEMPLATEDIR"/windows_release_x86_64 && cp /groups/godot/bin/linux_release.x86_64 "$TEMPLATEDIR"/linux_release.x86_64 && cp /groups/version.txt $BASE_DIR && cp /groups/version.txt /groups/build/
-					# VERSION=`cat /groups/version.txt` TEMPLATEDIR=/groups/.local/share/godot/export_templates/$VERSION/ && mkdir /groups/pdbs && mv "$TEMPLATEDIR"/templates/*.pdb /groups/pdbs/
-					cp -r /groups/project /groups/build/
-					cd /groups/build
-					# mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir `pwd`/export_windows && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Windows Desktop" `pwd`/export_windows/v_sekai_windows.exe --path /groups/project/project_export || [ -f `pwd`/export_windows/v_sekai_windows.exe\ ]
-					# mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && mkdir export_linuxbsd && chmod +x godot.linuxbsd.opt.tools.64.llvm && XDG_DATA_HOME=`pwd`/.local/share/ ./godot.linuxbsd.opt.tools.64.llvm --headless --export "Linux/X11" `pwd`/export_linuxbsd/v_sekai_linuxbsd --path /groups/project/project_export || [ -f `pwd`/export_linuxbsd/v_sekai_linuxbsd ]
+					eval `sed -e "s/ = /=/" /groups/godot/version.py` && declare "_tmp$patch=.$patch" "_tmp0=" "_tmp=_tmp$patch" && echo $major.$minor.$status > /groups/build/version.txt
+					export VERSION=`cat /groups/build/version.txt`
+					export BASE_DIR=/groups/.local/share/godot/export_templates/ 
+					export TEMPLATEDIR=$BASE_DIR/$VERSION/
+					mkdir -p $TEMPLATEDIR
+					cp /groups/godot/bin/windows_release_x86_64.exe $TEMPLATEDIR/windows_release_x86_64.exe
+					cp /groups/godot/bin/windows_release_x86_64.exe $TEMPLATEDIR/windows_debug_x86_64.exe
+					cp /groups/godot/bin/windows_release_x86_64.pdb $TEMPLATEDIR/windows_release_x86_64.pdb
+					cp /groups/godot/bin/windows_release_x86_64.pdb $TEMPLATEDIR/windows_debug_x86_64.pdb
+					cp /groups/godot/bin/linux_debug.x86_64 $TEMPLATEDIR/linux_debug.x86_64
+					cp /groups/godot/bin/linux_release.x86_64 $TEMPLATEDIR/linux_release.x86_64
+					cp /groups/build/version.txt $TEMPLATEDIR/version.txt
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Windows Desktop" /groups/build/v_sekai_windows.exe --path /groups/project || [ -f /groups/build/v_sekai_windows.exe ]
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Linux/X11" /groups/build/v_sekai_linuxbsd --path /groups/project || [ -f /groups/build/v_sekai_linuxbsd ]
 					"""#
 				export:
 					directories:
-						"/groups/build/project_export": dagger.#FS
+						"/groups/build": dagger.#FS
 				always: true
 			}
 	}

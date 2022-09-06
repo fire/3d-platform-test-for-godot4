@@ -133,7 +133,7 @@ build_godot_linux:
 		input:   fetch_godot.output
 		workdir: "/groups/godot"
 		script: contents: #"""
-			scons werror=no platform=linuxbsd target=release_debug -j4 use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
+			scons werror=no platform=linuxbsd target=release_debug use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
 			"""#
 	}
 build_godot_windows:
@@ -141,7 +141,7 @@ build_godot_windows:
 		input:   build_godot_linux.output
 		workdir: "/groups/godot"
 		script: contents: #"""
-			PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug -j4 use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
+			PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
 			"""#
 	}
 dagger.#Plan & {

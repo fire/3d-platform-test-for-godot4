@@ -183,7 +183,7 @@ dagger.#Plan & {
 					rm -rf /groups/.local/share/godot/export_templates/
 					mkdir -p /groups/.local/share/godot/export_templates/
 					cd /groups/.local/share/godot/export_templates/
-					eval `sed -e "s/ = /=/" /groups/godot/version.py` && declare "_tmp=_tmp$patch" && echo $major.$minor${!_tmp}.$status > /groups/build/version.txt
+					eval `sed -e "s/ = /=/" /groups/godot/version.py` && echo $major.$minor.$status > /groups/build/version.txt
 					export VERSION=`cat /groups/build/version.txt`
 					export BASE_DIR=/groups/.local/share/godot/export_templates/ 
 					export TEMPLATEDIR=$BASE_DIR/$VERSION/

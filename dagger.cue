@@ -200,7 +200,6 @@ dagger.#Plan & {
 				export:
 					directories:
 						"/groups/build": dagger.#FS
-				always: true
 			}
 	}
 }

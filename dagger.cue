@@ -32,13 +32,13 @@ import (
 godot: {
 	core.#GitPull & {
 		remote: "https://github.com/V-Sekai/godot.git"
-		ref:    "groups-4.x.2022-09-06T111604Z"
+		ref:    "groups-staging-4.x"
 	}
 }
 godot_groups_modules: {
 	core.#GitPull & {
 		remote: "https://github.com/V-Sekai/godot-modules-groups.git"
-		ref:    "f5078d818595ed130adf057d0ea16dacff0ff93f"
+		ref:    "groups-modules-4.x"
 	}
 }
 

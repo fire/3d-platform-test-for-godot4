@@ -133,18 +133,42 @@ build_godot_linux:
 		input:   fetch_godot.output
 		workdir: "/groups/godot"
 		script: contents: #"""
-			scons werror=no platform=linuxbsd target=release_debug use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
+			PATH=/opt/llvm-mingw/bin:$PATH scons tools=yes werror=no platform=linuxbsd target=release_debug use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
 			"""#
 		export:
 			directories:
 				"/groups/godot/bin": dagger.#FS
 	}
-build_godot_windows:
+build_godot_linux_template:
 	bash.#Run & {
 		input:   build_godot_linux.output
 		workdir: "/groups/godot"
 		script: contents: #"""
-			PATH=/opt/llvm-mingw/bin:$PATH scons werror=no platform=windows target=release_debug use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
+			scons tools=no werror=no platform=linuxbsd target=release_debug use_lto=no deprecated=no use_static_cpp=yes use_llvm=yes builtin_freetype=yes custom_modules=../godot_groups_modules
+			"""#
+		export:
+			directories:
+				"/groups/godot/bin": dagger.#FS
+	}
+build_godot_windows_template:
+	bash.#Run & {
+		input:   build_godot_linux_template.output
+		workdir: "/groups/godot"
+		script: contents: #"""
+			PATH=/opt/llvm-mingw/bin:$PATH scons tools=no werror=no platform=windows target=release_debug use_lto=no deprecated=no use_mingw=yes use_llvm=yes use_thinlto=no warnings=no LINKFLAGS=-Wl,-pdb= CCFLAGS='-Wall -Wno-tautological-compare -g -gcodeview' debug_symbols=no custom_modules=../godot_groups_modules
+			"""#
+		export:
+			directories:
+				"/groups/godot/bin": dagger.#FS
+	}
+build_godot_web_template:
+	bash.#Run & {
+		input:   build_godot_windows_template.output
+		workdir: "/groups/godot"
+		script: contents: #"""
+			PATH=/opt/llvm-mingw/bin:$PATH scons tools=no werror=no platform=web target=release_debug use_lto=no deprecated=no use_thinlto=no warnings=no debug_symbols=no custom_modules=../godot_groups_modules
+			ls /groups/godot/bin
+			exit 1
 			"""#
 		export:
 			directories:
@@ -169,15 +193,15 @@ dagger.#Plan & {
 						dest:     "/groups/project"
 					},
 				input:
-					build_godot_windows.output,
+					build_godot_web_template.output,
 				script: contents: #"""
 					cd /groups/godot
-					cp bin/godot.windows.opt.tools.x86_64.llvm.exe bin/windows_release_x86_64.exe 
+					cp bin/godot.windows.opt.x86_64.llvm.exe bin/windows_release_x86_64.exe 
 					mingw-strip --strip-debug bin/windows_release_x86_64.exe
-					cp bin/godot.windows.opt.tools.x86_64.llvm.pdb bin/windows_release_x86_64.pdb
+					cp bin/godot.windows.opt.x86_64.llvm.pdb bin/windows_release_x86_64.pdb
 					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_cicd.x86_64
-					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_release.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
-					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64 && strip --strip-debug bin/linux_debug.x86_64	
+					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_release.x86_64.llvm && cp bin/godot.linuxbsd.opt.x86_64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
+					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.x86_64.llvm bin/linux_debug.x86_64 && strip --strip-debug bin/linux_debug.x86_64	
 					rm -rf /groups/project/build
 					mkdir -p /groups/build/
 					rm -rf /groups/.local/share/godot/export_templates/
@@ -193,9 +217,9 @@ dagger.#Plan & {
 					cp /groups/godot/bin/linux_debug.x86_64 $TEMPLATEDIR/linux_debug.x86_64
 					cp /groups/godot/bin/linux_release.x86_64 $TEMPLATEDIR/linux_release.x86_64
 					cp /groups/build/version.txt $TEMPLATEDIR/version.txt
-					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Windows Desktop" /groups/build/v_sekai_windows.exe --path /groups/project && [ -f /groups/build/v_sekai_windows.exe ]
-					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Linux/X11" /groups/build/v_sekai_linuxbsd --path /groups/project && [ -f /groups/build/v_sekai_linuxbsd ]					
-					cp /groups/godot/bin/windows_release_x86_64.pdb /groups/build/v_sekai_linuxbsd.pdb
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Windows Desktop" /groups/build/game_windows.exe --path /groups/project && [ -f /groups/build/game_windows.exe ]
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Linux/X11" /groups/build/game_linuxbsd --path /groups/project && [ -f /groups/build/game_linuxbsd ]					
+					cp /groups/godot/bin/windows_release_x86_64.pdb /groups/build/game_linuxbsd.pdb
 					"""#
 				export:
 					directories:

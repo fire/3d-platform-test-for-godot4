@@ -58,7 +58,7 @@ jobs:
         uses: dagger/dagger-for-github@v3
         with:
           cmds: |
-             do build --cache-to type=local,mode=max,dest=cache
+             dagger do build --cache-to type=local,mode=max,dest=cache
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2

@@ -161,19 +161,6 @@ build_godot_windows_template:
 			directories:
 				"/groups/godot/bin": dagger.#FS
 	}
-build_godot_web_template:
-	bash.#Run & {
-		input:   build_godot_windows_template.output
-		workdir: "/groups/godot"
-		script: contents: #"""
-			PATH=/opt/llvm-mingw/bin:$PATH scons tools=no werror=no platform=web target=release_debug use_lto=no deprecated=no use_thinlto=no warnings=no debug_symbols=no custom_modules=../godot_groups_modules
-			ls /groups/godot/bin
-			exit 1
-			"""#
-		export:
-			directories:
-				"/groups/godot/bin": dagger.#FS
-	}
 dagger.#Plan & {
 	client: {
 		filesystem: ".": read: {
@@ -193,7 +180,7 @@ dagger.#Plan & {
 						dest:     "/groups/project"
 					},
 				input:
-					build_godot_web_template.output,
+					build_godot_windows_template.output,
 				script: contents: #"""
 					cd /groups/godot
 					cp bin/godot.windows.opt.x86_64.llvm.exe bin/windows_release_x86_64.exe 

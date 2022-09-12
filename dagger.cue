@@ -183,7 +183,7 @@ dagger.#Plan & {
 					build_godot_windows_template.output,
 				script: contents: #"""
 					cd /groups/godot
-					cp bin/godot.windows.opt.x86_64.llvm.exe bin/windows_release_x86_64.exe 
+					cp bin/godot.windows.opt.debug.x86_64.llvm.exe bin/windows_release_x86_64.exe 
 					mingw-strip --strip-debug bin/windows_release_x86_64.exe
 					cp bin/godot.windows.opt.x86_64.llvm.pdb bin/windows_release_x86_64.pdb
 					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_cicd.x86_64

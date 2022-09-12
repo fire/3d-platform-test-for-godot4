@@ -205,10 +205,10 @@ dagger.#Plan & {
 					cp /groups/godot/bin/linux_release.x86_64 $TEMPLATEDIR/linux_release.x86_64
 					cp /groups/build/version.txt $TEMPLATEDIR/version.txt
 					if [[ -z "${REPO_NAME}" ]]; then
-						export REPO_NAME="game_"
+						export GODOT_ENGINE_GAME_NAME="game_"
 					fi
-					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Windows Desktop" /groups/build/${REPO_NAME}windows.exe --path /groups/project && [ -f /groups/build/${REPO_NAME}windows.exe ]
-					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Linux/X11" /groups/build/${REPO_NAME}linuxbsd --path /groups/project && [ -f /groups/build/${REPO_NAME}linuxbsd ]					
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Windows Desktop" /groups/build/${GODOT_ENGINE_GAME_NAME}windows.exe --path /groups/project && [ -f /groups/build/${GODOT_ENGINE_GAME_NAME}windows.exe ]
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Linux/X11" /groups/build/${GODOT_ENGINE_GAME_NAME}linuxbsd --path /groups/project && [ -f /groups/build/${GODOT_ENGINE_GAME_NAME}linuxbsd ]					
 					cp /groups/godot/bin/windows_release_x86_64.pdb /groups/build/game_linuxbsd.pdb
 					"""#
 				export:

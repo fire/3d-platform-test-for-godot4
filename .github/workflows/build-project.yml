@@ -36,8 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     # Set cache export environment
     env:
-      DAGGER_CACHE_FROM: type=gha,scope=${{github.job}}-${{github.ref}}-${{github.sha}},dest=cache
-      DAGGER_CACHE_TO: type=gha,mode=max,scope=${{github.job}}-${{github.ref}}-${{github.sha}},dest=cache
+      DAGGER_CACHE_FROM: type=gha,scope=${{github.job}}-${{github.ref}}-${{github.sha}}
+      DAGGER_CACHE_TO: type=gha,mode=max,scope=${{github.job}}-${{github.ref}}-${{github.sha}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2

@@ -82,15 +82,6 @@ fetch_godot: {
 			bash.#Run & {
 				workdir: "/groups/godot"
 				script: contents: #"""
-					yum install -y xorg-x11-server-Xvfb unzip wget flatpak 
-					flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-					flatpak install flathub org.blender.Blender -y
-					flatpak override org.blender.Blender --talk-name=org.freedesktop.Flatpak
-					"""#
-			},
-			bash.#Run & {
-				workdir: "/groups/godot"
-				script: contents: #"""
 					alternatives --set ld /usr/bin/ld.gold && git lfs install && ln -s /usr/bin/scons-3 /usr/local/bin/scons
 					"""#
 			},
@@ -216,8 +207,8 @@ dagger.#Plan & {
 					if [[ -z "${REPO_NAME}" ]]; then
 						export GODOT_ENGINE_GAME_NAME="game_"
 					fi
-					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && DRI_PRIME=0 xvfb-run --auto-servernum XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --export "Windows Desktop" /groups/build/${GODOT_ENGINE_GAME_NAME}windows.exe --path /groups/project && [ -f /groups/build/${GODOT_ENGINE_GAME_NAME}windows.exe ]
-					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && DRI_PRIME=0 xvfb-run --auto-servernum XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --export "Linux/X11" /groups/build/${GODOT_ENGINE_GAME_NAME}linuxbsd --path /groups/project && [ -f /groups/build/${GODOT_ENGINE_GAME_NAME}linuxbsd ]					
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Windows Desktop" /groups/build/${GODOT_ENGINE_GAME_NAME}windows.exe --path /groups/project && [ -f /groups/build/${GODOT_ENGINE_GAME_NAME}windows.exe ]
+					mkdir -p /groups/project/.godot/editor && mkdir -p /groups/project/.godot/imported && chmod +x /groups/godot/bin/linux_cicd.x86_64 && XDG_DATA_HOME=/groups/.local/share/ /groups/godot/bin/linux_cicd.x86_64 --headless --export "Linux/X11" /groups/build/${GODOT_ENGINE_GAME_NAME}linuxbsd --path /groups/project && [ -f /groups/build/${GODOT_ENGINE_GAME_NAME}linuxbsd ]					
 					cp /groups/godot/bin/windows_release_x86_64.pdb /groups/build/game_linuxbsd.pdb
 					"""#
 				export:

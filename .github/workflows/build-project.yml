@@ -26,6 +26,9 @@ on:
   push:
     branches: [ main, dagger ]
 
+env:
+  REPO_NAME: ${{ github.event.repository.name }}
+
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}
   cancel-in-progress: true

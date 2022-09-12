@@ -38,7 +38,7 @@ godot: {
 godot_groups_modules: {
 	core.#GitPull & {
 		remote: "https://github.com/V-Sekai/godot-modules-groups.git"
-		ref:    "840929105fa7c8b27059c361d1dc88eeb18c63c2"
+		ref:    "f5078d818595ed130adf057d0ea16dacff0ff93f"
 	}
 }
 

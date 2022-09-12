@@ -187,8 +187,8 @@ dagger.#Plan & {
 					mingw-strip --strip-debug bin/windows_release_x86_64.exe
 					cp bin/godot.windows.opt.x86_64.llvm.pdb bin/windows_release_x86_64.pdb
 					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_cicd.x86_64
-					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_release.x86_64.llvm && cp bin/godot.linuxbsd.opt.x86_64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
-					cp bin/godot.linuxbsd.opt.tools.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.x86_64.llvm bin/linux_debug.x86_64 && strip --strip-debug bin/linux_debug.x86_64	
+					cp bin/godot.linuxbsd.opt.debug.x86_64.llvm bin/linux_release.x86_64.llvm && cp bin/godot.linuxbsd.opt.x86_64.llvm bin/linux_release.x86_64 && strip --strip-debug bin/linux_release.x86_64
+					cp bin/godot.linuxbsd.opt.debug.x86_64.llvm bin/linux_debug.x86_64.llvm && cp bin/godot.linuxbsd.opt.x86_64.llvm bin/linux_debug.x86_64 && strip --strip-debug bin/linux_debug.x86_64	
 					rm -rf /groups/project/build
 					mkdir -p /groups/build/
 					rm -rf /groups/.local/share/godot/export_templates/
